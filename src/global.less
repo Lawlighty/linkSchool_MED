@@ -1,0 +1,174 @@
+@import '~antd/es/style/themes/default.less';
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.colorWeak {
+  filter: invert(80%);
+}
+
+.ant-layout {
+  min-height: 100vh;
+}
+
+canvas {
+  display: block;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+// 字体
+.font14 {
+  font-size: 14px;
+}
+.font16 {
+  font-size: 16px;
+}
+.font18 {
+  font-size: 18px;
+}
+.font20 {
+  font-size: 20px;
+}
+.font22 {
+  font-size: 22px;
+}
+.font24 {
+  font-size: 24px;
+}
+.font26 {
+  font-size: 26px;
+}
+.font28 {
+  font-size: 28px;
+}
+.font30 {
+  font-size: 30px;
+}
+
+//block
+.in_block {
+  display: in_block;
+}
+
+//颜色
+.c_0_45 {
+  color: rgba(0, 0, 0, 0.45);
+}
+.c_0 {
+  color: #000;
+}
+.c_red {
+  color: #f5222d;
+}
+.c_green {
+  color: #52c41a;
+}
+
+//flex
+.flex {
+  display: flex;
+}
+.flex_c {
+  display: flex;
+  flex-direction: column;
+}
+.flex_a_c {
+  align-items: center;
+}
+.flex_a_s {
+  align-items: flex-start;
+}
+.flex_j_c {
+  justify-content: center;
+}
+.flex_1 {
+  flex: 1;
+}
+
+.pointer {
+  cursor: pointer;
+}
+//margin
+.ma_t_10 {
+  margin-top: 10px;
+}
+.ma_b_10 {
+  margin-bottom: 10px;
+}
+.ma_b_20 {
+  margin-bottom: 20px;
+}
+.ma_t_b_10 {
+  margin: 10px 0;
+}
+.ma_l_r_10 {
+  margin: 0 10px;
+}
+.ma_l_10 {
+  margin-left: 10px;
+}
+.ma_l_20 {
+  margin-left: 20px;
+}
+
+.div_w_20 {
+  background: #fff;
+  padding: 20px;
+}
+
+.borderR50 {
+  border-radius: 50%;
+}
+
+//步骤条
+.steps-content {
+  margin-top: 16px;
+  border: 1px dashed #e9e9e9;
+  border-radius: 2px;
+  background-color: #fafafa;
+  min-height: 200px;
+  text-align: center;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.steps-action {
+  margin-top: 24px;
+}
+@media (max-width: @screen-xs) {
+  .ant-table {
+    width: 100%;
+    overflow-x: auto;
+    &-thead > tr,
+    &-tbody > tr {
+      > th,
+      > td {
+        white-space: pre;
+        > span {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+// 兼容IE11
+@media screen and(-ms-high-contrast: active), (-ms-high-contrast: none) {
+  body .ant-design-pro > .ant-layout {
+    min-height: 100vh;
+  }
+}
