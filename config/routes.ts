@@ -46,6 +46,12 @@
             ],
           },
           {
+            path: '/tags',
+            name: '标签',
+            icon: 'tag',
+            component: './tags/index',
+          },
+          {
             path: '/accounts',
             name: '用户',
             icon: 'user',

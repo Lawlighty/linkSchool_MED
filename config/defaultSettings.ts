@@ -13,7 +13,7 @@ const proSettings: DefaultSettings = {
   fixedHeader: true,
   fixSiderbar: true,
   colorWeak: false,
-  title: '极课网络科技',
+  title: '极课学院后台',
   pwa: false,
   iconfontUrl: '',
   menu: {

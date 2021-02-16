@@ -7,7 +7,7 @@ import {
   HistoryOutlined,
   HomeOutlined,
 } from '@ant-design/icons';
-import { Table, Tag, Space, Drawer, Tooltip as AntdTooltip } from 'antd';
+import { Table, Tag, Space, Drawer, Tooltip as AntdTooltip, Badge } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './AccountsList.less';
 import { ConnectState } from '@/models/connect';
@@ -37,6 +37,7 @@ interface currentDrawerUserDto {
 const genderList = ['男', '女', '未知'];
 const AccountsList: React.FC<AccountsListProps> = (props) => {
   const { dispatch, userList } = props;
+  const my_id = JSON.parse(localStorage.getItem('currentUser') || '{}')['_id'];
   console.log('userList===>', userList);
   useEffect(() => {
     dispatch({
@@ -52,14 +53,32 @@ const AccountsList: React.FC<AccountsListProps> = (props) => {
       dataIndex: 'username',
       key: 'username',
       render: (text: string, record: any) => (
-        <a
-          onClick={(e) => {
-            setVisibleDrawer(true);
-            setCurrentDrawerUser(record);
-          }}
-        >
-          {text}
-        </a>
+        <div>
+          {my_id !== record._id && (
+            <a
+              onClick={(e) => {
+                setVisibleDrawer(true);
+                setCurrentDrawerUser(record);
+              }}
+            >
+              {text}
+            </a>
+          )}
+          {my_id === record._id && (
+            <AntdTooltip placement="top" title="自己">
+              <Badge dot>
+                <a
+                  onClick={(e) => {
+                    setVisibleDrawer(true);
+                    setCurrentDrawerUser(record);
+                  }}
+                >
+                  {text}
+                </a>
+              </Badge>
+            </AntdTooltip>
+          )}
+        </div>
       ),
     },
     {
@@ -72,18 +91,18 @@ const AccountsList: React.FC<AccountsListProps> = (props) => {
       dataIndex: 'age',
       key: 'age',
     },
-    // {
-    //   title: '性别',
-    //   dataIndex: 'gender',
-    //   key: 'gender',
-    //   render: (text: number) => {
-    //     let color = text === 0 ? 'blue' : 'magenta';
-    //     if (text === 2) {
-    //       color = 'purple';
-    //     }
-    //     return <Tag color={color}>{genderList[text].toUpperCase()}</Tag>;
-    //   },
-    // },
+    {
+      title: '性别',
+      dataIndex: 'gender',
+      key: 'gender',
+      render: (text: number) => {
+        let color = text === 0 ? 'blue' : 'magenta';
+        if (text === 2) {
+          color = 'purple';
+        }
+        return <Tag color={color}>{genderList[text]}</Tag>;
+      },
+    },
     {
       title: '邮箱',
       dataIndex: 'email',

@@ -49,7 +49,7 @@ const Article: React.FC<{}> = (props) => {
   };
 
   return (
-    <PageHeaderWrapper content=" 极课学院用户">
+    <PageHeaderWrapper>
       <div className="div_w_20">
         <div className="container">
           <Steps current={current}>
