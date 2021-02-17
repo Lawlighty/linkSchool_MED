@@ -1,5 +1,5 @@
 import { Effect, Reducer } from 'umi';
-
+import { message } from 'antd';
 import {
   queryCurrent,
   query as queryUsers,
@@ -36,6 +36,8 @@ export interface UserModelType {
     fetchCurrent: Effect;
     fetchUserList: Effect; // 获取用户列表
     fetchUserDetail: Effect; // 获取某用户信息
+    errorCodeMessage: Effect; // 错误信息提示
+    successCodeMessage: Effect; // 信息提示
   };
   reducers: {
     saveCurrentUser: Reducer<UserModelState>;
@@ -84,6 +86,14 @@ const UserModel: UserModelType = {
         type: 'setUserDetail',
         payload: response,
       });
+    },
+    errorCodeMessage({ payload }, { call, put }) {
+      // 获取token\
+      // 判断status
+      message.error(payload.message);
+    },
+    successCodeMessage({ payload }, { call, put }) {
+      message.success(payload.message);
     },
   },
 

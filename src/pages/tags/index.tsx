@@ -7,12 +7,28 @@ import {
   HistoryOutlined,
   HomeOutlined,
 } from '@ant-design/icons';
-import { Table, Tag, Space, Drawer, Tooltip as AntdTooltip, Badge } from 'antd';
+import {
+  Table,
+  Tag,
+  Space,
+  Drawer,
+  Tooltip as AntdTooltip,
+  Badge,
+  Button,
+  Modal,
+  Input,
+  Popconfirm,
+  message,
+  Spin,
+} from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import styles from './index.less';
 
 interface TagListProps {
   dispatch: Dispatch;
   tagList?: [];
+  tagListCount?: 0;
+  tagLoading?: false;
 }
 interface currentDrawerUserDto {
   username?: string;
@@ -31,13 +47,64 @@ interface currentDrawerUserDto {
 }
 
 const TagsPage: React.FC<TagListProps> = (props) => {
-  const { dispatch, tagList } = props;
-  useEffect(() => {
+  const { dispatch, tagList, tagListCount, tagLoading } = props;
+
+  const [currentTag, setCurrentTag] = useState<any>({});
+  const [visible, setVisible] = useState<boolean>(false);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: tagListCount,
+  });
+
+  const fetchTags = (p_pagination = {}) => {
     dispatch({
       type: 'tag/fetchTagList',
-      param: {},
+      payload: {
+        query: p_pagination || pagination,
+      },
     });
+  };
+  useEffect(() => {
+    setPagination({ ...pagination, total: tagListCount });
+  }, [tagListCount]);
+  useEffect(() => {
+    // dispatch({
+    //   type: 'tag/fetchTagList',
+    //   payload: {
+    //     query: pagination,
+    //   },
+    // });
+    fetchTags();
   }, []);
+  const changeCurrentTag = (key, value) => {
+    setCurrentTag({ ...currentTag, [key]: value });
+  };
+  const handleOk = () => {
+    setVisible(false);
+    if (currentTag._id) {
+      dispatch({
+        type: 'tag/updateTagList',
+        payload: { params: currentTag },
+      });
+    } else {
+      dispatch({
+        type: 'tag/addTagList',
+        payload: { params: currentTag },
+      });
+    }
+  };
+  const confirm = (e, record) => {
+    dispatch({
+      type: 'tag/deleteTagList',
+      payload: { id: record._id },
+    });
+  };
+  const handleTableChange = (pagination) => {
+    // console.log('pagination', pagination);
+    setPagination({ ...pagination });
+    fetchTags(pagination);
+  };
 
   const columns = [
     {
@@ -45,10 +112,10 @@ const TagsPage: React.FC<TagListProps> = (props) => {
       key: 'name',
       dataIndex: 'name',
       render: (text) => {
-        let color = text.length > 3 ? 'geekblue' : 'green';
-        if (text === 'JAVA') {
-          color = 'volcano';
-        }
+        let color = text.length <= 4 ? 'geekblue' : text.length <= 6 ? 'green' : 'volcano';
+        // if (text === 'JAVA') {
+        //   color = 'volcano';
+        // }
         return (
           <Tag color={color} key={text}>
             {text.toUpperCase()}
@@ -57,12 +124,28 @@ const TagsPage: React.FC<TagListProps> = (props) => {
       },
     },
     {
-      title: 'Action',
+      title: '操作',
       key: 'action',
       render: (text: string, record: any) => (
         <Space size="middle">
-          <a>修改</a>
-          <a>删除</a>
+          <a
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentTag({ ...record });
+              setVisible(true);
+            }}
+          >
+            修改
+          </a>
+          <Popconfirm
+            title="确定要删除吗?"
+            onConfirm={(e) => confirm(e, record)}
+            // onCancel={cancel}
+            okText="Yes"
+            cancelText="No"
+          >
+            <a href="#">删除</a>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -72,8 +155,70 @@ const TagsPage: React.FC<TagListProps> = (props) => {
     <PageHeaderWrapper>
       <div className="div_w_20">
         <div>
-          <Table columns={columns} dataSource={tagList} />
+          <Button
+            type="primary"
+            className="ma_b_10"
+            onClick={() => {
+              setCurrentTag({});
+              setVisible(true);
+            }}
+          >
+            新建
+          </Button>
         </div>
+        <div>
+          <Spin tip="Loading..." spinning={tagLoading}>
+            <Table
+              columns={columns}
+              dataSource={tagList}
+              pagination={pagination}
+              onChange={handleTableChange}
+            />
+          </Spin>
+        </div>
+
+        <Modal
+          title={currentTag._id ? '编辑标签' : '新建标签'}
+          visible={visible}
+          onOk={handleOk}
+          onCancel={() => {
+            setVisible(false);
+          }}
+        >
+          <div className={styles.item}>
+            <div className={styles.label}>标签名称</div>
+            <div className={styles.info}>
+              <Input
+                placeholder="请输入标签名称"
+                value={currentTag.name}
+                onChange={(e) => changeCurrentTag('name', e.target.value)}
+              />
+            </div>
+          </div>
+          <div className={styles.item}>
+            <div className={styles.label}>预览效果</div>
+            <div className={styles.info}>
+              {currentTag.name && (
+                <Tag
+                  color={
+                    currentTag.name.length <= 4
+                      ? 'geekblue'
+                      : currentTag.name.length <= 6
+                      ? 'green'
+                      : 'volcano'
+                  }
+                >
+                  {currentTag.name.toUpperCase()}
+                </Tag>
+              )}
+              {!currentTag.name && (
+                <Tag color="geekblue" size="large">
+                  标签
+                </Tag>
+              )}
+            </div>
+          </div>
+        </Modal>
       </div>
     </PageHeaderWrapper>
   );
@@ -84,4 +229,6 @@ export default connect(({ tag }) => ({
     tag.key = tag._id;
     return item;
   }),
+  tagListCount: tag.tagListCount,
+  tagLoading: tag.tagLoading,
 }))(TagsPage);
