@@ -3,6 +3,7 @@ import { defineConfig } from 'umi';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
+import defaultUrl from './default';
 
 const { REACT_APP_ENV } = process.env;
 
@@ -39,7 +40,7 @@ export default defineConfig({
   // proxy: proxy[REACT_APP_ENV || 'dev'],
   proxy: {
     '/api/': {
-      target: 'http://localhost:3009',
+      target: defaultUrl.target,
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
     },

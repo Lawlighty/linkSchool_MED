@@ -1,21 +1,19 @@
-import { history, Reducer, Effect } from 'umi';
-
-import { query_tag_list, add_tag, delete_tag, update_tag } from '@/services/tag';
+import { query_banner_list, add_banner, delete_banner, update_banner } from '@/services/banner';
 import { message } from 'antd';
 
 const Model = {
-  namespace: 'tag',
+  namespace: 'banner',
 
   state: {
-    tagList: [],
-    tagListCount: 0,
-    tagLoading: false,
+    bannerList: [],
+    bannerListCount: 0,
+    bannerLoading: false,
   },
 
   effects: {
-    *fetchTagList({ payload }, { call, put }) {
+    *fetchBannerList({ payload }, { call, put }) {
       yield put({
-        type: 'setTagLoading',
+        type: 'setBannerLoading',
         payload: {
           loading: true,
         },
@@ -25,26 +23,26 @@ const Model = {
         limit: pagination.pageSize || 10,
         page: pagination.current || 1,
       };
-      const response = yield call(query_tag_list, JSON.stringify(query));
+      const response = yield call(query_banner_list, JSON.stringify(query));
       yield put({
-        type: 'setTagList',
+        type: 'setBannerList',
         payload: response,
       });
       yield put({
-        type: 'setTagLoading',
+        type: 'setBannerLoading',
         payload: {
           loading: false,
         },
       });
     },
-    *addTagList({ payload }, { call, put }) {
+    *addBannerList({ payload }, { call, put }) {
       yield put({
-        type: 'setTagLoading',
+        type: 'setBannerLoading',
         payload: {
           loading: true,
         },
       });
-      const response = yield call(add_tag, payload.params);
+      const response = yield call(add_banner, payload.params);
       if (response.status === 200) {
         yield put({
           type: 'user/successCodeMessage',
@@ -52,7 +50,7 @@ const Model = {
         });
 
         yield put({
-          type: 'fetchTagList',
+          type: 'fetchBannerList',
           payload: payload,
         });
       } else {
@@ -62,25 +60,25 @@ const Model = {
         });
       }
       yield put({
-        type: 'setTagLoading',
+        type: 'setBannerLoading',
         payload: {
           loading: false,
         },
       });
     },
-    *updateTagList({ payload }, { call, put }) {
+    *updateBannerList({ payload }, { call, put }) {
       yield put({
-        type: 'setTagLoading',
+        type: 'setBannerLoading',
         payload: {
           loading: true,
         },
       });
-      const response = yield call(update_tag, payload.params);
+      const response = yield call(update_banner, payload.params);
       if (response._id) {
         message.success('修改成功!');
 
         yield put({
-          type: 'fetchTagList',
+          type: 'fetchBannerList',
           payload: payload,
         });
       } else {
@@ -90,25 +88,25 @@ const Model = {
         });
       }
       yield put({
-        type: 'setTagLoading',
+        type: 'setBannerLoading',
         payload: {
           loading: false,
         },
       });
     },
-    *deleteTagList({ payload }, { call, put }) {
+    *deleteBannerList({ payload }, { call, put }) {
       yield put({
-        type: 'setTagLoading',
+        type: 'setBannerLoading',
         payload: {
           loading: true,
         },
       });
-      const response = yield call(delete_tag, payload.id);
+      const response = yield call(delete_banner, payload.id);
       if (response._id) {
         message.success('删除成功!');
 
         yield put({
-          type: 'fetchTagList',
+          type: 'fetchBannerList',
           payload: payload,
         });
       } else {
@@ -118,7 +116,7 @@ const Model = {
         });
       }
       yield put({
-        type: 'setTagLoading',
+        type: 'setBannerLoading',
         payload: {
           loading: false,
         },
@@ -127,17 +125,17 @@ const Model = {
   },
 
   reducers: {
-    setTagList(state, { payload }) {
+    setBannerList(state, { payload }) {
       return {
         ...state,
-        tagList: payload.data || [],
-        tagListCount: payload.total || 0,
+        bannerList: payload.data || [],
+        bannerListCount: payload.total || 0,
       };
     },
-    setTagLoading(state, { payload }) {
+    setBannerLoading(state, { payload }) {
       return {
         ...state,
-        tagLoading: payload.loading || false,
+        bannerLoading: payload.loading || false,
       };
     },
   },

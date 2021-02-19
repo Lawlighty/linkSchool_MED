@@ -46,6 +46,32 @@
             ],
           },
           {
+            path: '/banners',
+            name: '轮播图',
+            icon: 'picture',
+            component: './banner/index',
+          },
+          {
+            path: '/documents',
+            name: '文档',
+            icon: 'read',
+            component: './documents/index',
+          },
+          {
+            path: '/documents/create',
+            name: '新建文档',
+            component: './documents/Article',
+            // authority: ['admin'],
+            hideInMenu: true,
+          },
+          {
+            path: '/documents/:id',
+            name: '编辑文档',
+            component: './documents/Article',
+            // authority: ['admin'],
+            hideInMenu: true,
+          },
+          {
             path: '/tags',
             name: '标签',
             icon: 'tag',

@@ -61,7 +61,7 @@ const TagsPage: React.FC<TagListProps> = (props) => {
     dispatch({
       type: 'tag/fetchTagList',
       payload: {
-        query: p_pagination || pagination,
+        pagination: p_pagination || pagination,
       },
     });
   };
@@ -85,19 +85,19 @@ const TagsPage: React.FC<TagListProps> = (props) => {
     if (currentTag._id) {
       dispatch({
         type: 'tag/updateTagList',
-        payload: { params: currentTag },
+        payload: { params: currentTag, pagination: pagination },
       });
     } else {
       dispatch({
         type: 'tag/addTagList',
-        payload: { params: currentTag },
+        payload: { params: currentTag, pagination: pagination },
       });
     }
   };
   const confirm = (e, record) => {
     dispatch({
       type: 'tag/deleteTagList',
-      payload: { id: record._id },
+      payload: { id: record._id, pagination: pagination },
     });
   };
   const handleTableChange = (pagination) => {
@@ -226,7 +226,7 @@ const TagsPage: React.FC<TagListProps> = (props) => {
 // export default connect()(AccountsList);
 export default connect(({ tag }) => ({
   tagList: tag.tagList.map((item: any) => {
-    tag.key = tag._id;
+    item.key = item._id;
     return item;
   }),
   tagListCount: tag.tagListCount,

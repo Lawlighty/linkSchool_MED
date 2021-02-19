@@ -133,7 +133,7 @@ const AccountsList: React.FC<AccountsListProps> = (props) => {
       key: 'action',
       render: (text: string, record: any) => (
         <Space size="middle">
-          <Link to={`/accounts/account-list/${`adasdas`}`}>查看主页</Link>
+          <Link to={`/accounts/account-list/${record._id}`}>查看主页</Link>
           <a>禁言</a>
           <a>删除</a>
         </Space>

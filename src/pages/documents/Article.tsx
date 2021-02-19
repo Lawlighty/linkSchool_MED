@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { connect, Link } from 'umi';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { connect, Link, history } from 'umi';
+import { LoadingOutlined, PlusOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { Tooltip as AntdTooltip, Steps, Button, message, Input, Select, Upload } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './Article.less';
@@ -8,6 +8,7 @@ import MEDitor from '@uiw/react-md-editor';
 import { mk_inti_string } from '../../../config/mk_init';
 // import numeral from 'numeral';
 import defaultUrl from '@/pages/config';
+import { doc } from 'prettier';
 
 const { Step } = Steps;
 const { TextArea } = Input;
@@ -27,27 +28,86 @@ const steps = [
   },
 ];
 
+const initDocument = {
+  content: mk_inti_string,
+};
 const Article: React.FC<{}> = (props) => {
-  useEffect(() => {});
+  const { dispatch, currentDocument } = props;
   // const [value, setValue] = useState('**Hello world!!!**');
   // markdown 内容
-  const [value, setValue] = useState(mk_inti_string);
+  // const [value, setValue] = useState(mk_inti_string);
 
   // 步骤
   const [current, setCurrent] = React.useState(0);
 
   // 文档
-  const [document, setDocument] = useState<any>({});
+  const [document, setDocument] = useState<any>(initDocument);
   // 图片上传
   const [loading, setLoading] = useState<boolean>(false);
 
-  const next = () => {
-    setCurrent(current + 1);
-    if (current === 1) {
-      console.log('document==>', document);
-      console.log('value==>', value);
-      console.log('value==>', typeof value);
+  const clearDocumentDetail = () => {
+    dispatch({
+      type: 'document/setDocumentDetail',
+      payload: {},
+    });
+  };
+  const fetchDocumentDetail = (id = '') => {
+    dispatch({
+      type: 'document/fetchDocumentDetail',
+      payload: {
+        _id: id,
+      },
+    });
+  };
+  const addDocument = () => {
+    let nowdocument = document;
+    nowdocument['cover'] =
+      nowdocument['cover'] || 'https://a1.jikexueyuan.com/home/201507/22/ff2e/55af4bf0d4eed.jpg';
+    dispatch({
+      type: 'document/addDocumentList',
+      payload: {
+        params: document,
+      },
+    });
+  };
+  const updateDocument = () => {
+    dispatch({
+      type: 'document/updateDocumentList',
+      payload: {
+        params: { ...document, content: JSON.stringify(document.content) },
+      },
+    });
+  };
+  useEffect(() => {
+    if (history.location.pathname.indexOf('create') < 0) {
+      // 编辑-->查询 文档信息
+      fetchDocumentDetail(history.location.pathname.split('/').pop());
+    } else {
+      clearDocumentDetail();
     }
+    console.log('初始化document', document);
+  }, []);
+  useEffect(() => {
+    if (history.location.pathname.indexOf('create') < 0) {
+      console.log('更新document', currentDocument);
+      setDocument({ ...currentDocument });
+    }
+  }, [currentDocument]);
+
+  const next = () => {
+    if (!document.name) {
+      message.info('请输入标题');
+      return;
+    }
+
+    if (current === 1) {
+      if (document._id) {
+        updateDocument();
+      } else {
+        addDocument();
+      }
+    }
+    setCurrent(current + 1);
   };
 
   const prev = () => {
@@ -58,6 +118,10 @@ const Article: React.FC<{}> = (props) => {
     setDocument({ ...document, [key]: value });
   };
 
+  const toContinue = () => {
+    setCurrent(0);
+    setDocument(initDocument);
+  };
   const beforeUpload = (file) => {
     console.log('beforeUpload', file);
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -135,7 +199,7 @@ const Article: React.FC<{}> = (props) => {
                     method="post"
                   >
                     {document.cover ? (
-                      <img src={document.cover} alt="图片" style={{ width: '100%' }} />
+                      <img src={document.cover} alt="图片" style={{ height: '100%' }} />
                     ) : (
                       uploadButton
                     )}
@@ -158,12 +222,47 @@ const Article: React.FC<{}> = (props) => {
           ) : null}
           {current === 1 ? (
             <div className="steps-content">
-              <MEDitor height={600} value={value} onChange={setValue} />
+              <MEDitor
+                height={600}
+                value={document.content}
+                onChange={(e) => {
+                  setDocument({ ...document, content: e });
+                }}
+              />
               <div style={{ padding: '50px 0 0 0' }} />
               {/* <MEDitor.Markdown source={value} /> */}
             </div>
           ) : null}
-          {current === 2 ? <div className="steps-content">操作成功!</div> : null}
+          {current === 2 ? (
+            <div className="steps-content">
+              <div>
+                <CheckCircleOutlined className="font56 c_green margin_b_20" />
+                <div className="font24 c_0 margin_10">发布成功</div>
+                <div className="font24  margin_10">
+                  <Button
+                    className="ma_r_10"
+                    type="primary"
+                    onClick={() => {
+                      if (history.location.pathname.indexOf('create') < 0) {
+                        history.push('/documents/create');
+                      } else {
+                        toContinue();
+                      }
+                    }}
+                  >
+                    继续发布
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      history.push('/documents');
+                    }}
+                  >
+                    返回列表
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : null}
 
           <div className="steps-action">
             {current < steps.length - 1 && (
@@ -173,7 +272,7 @@ const Article: React.FC<{}> = (props) => {
                 {/* 下一步 */}
               </Button>
             )}
-            {current === steps.length - 1 && (
+            {/* {current === steps.length - 1 && (
               <Button type="primary" onClick={() => message.success('Processing complete!')}>
                 完成
               </Button>
@@ -182,11 +281,13 @@ const Article: React.FC<{}> = (props) => {
               <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
                 上一步
               </Button>
-            )}
+            )} */}
           </div>
         </div>
       </div>
     </PageHeaderWrapper>
   );
 };
-export default connect()(Article);
+export default connect(({ document }) => ({
+  currentDocument: document.currentDocument,
+}))(Article);
