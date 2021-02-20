@@ -5,7 +5,9 @@ import {
   query as queryUsers,
   query_user_list,
   query_user_detail,
+  delete_user,
 } from '@/services/user';
+import { getQueryWhere } from '@/utils/utilFuncs';
 
 export interface CurrentUser {
   avatar?: string;
@@ -25,6 +27,8 @@ export interface UserModelState {
   currentUser?: CurrentUser;
   userList?: any;
   userDetail?: any;
+  // userListCount: number;
+  // userLoading: boolean;
 }
 
 export interface UserModelType {
@@ -44,47 +48,136 @@ export interface UserModelType {
     changeNotifyCount: Reducer<UserModelState>;
     setUserList: Reducer; // 更新用户列表
     setUserDetail: Reducer; // 更新用户列表
+    setUserLoading: Reducer; // 设置loading
   };
 }
 
 // const UserModel: UserModelType = {
-const UserModel: UserModelType = {
+const UserModel = {
   namespace: 'user',
 
   state: {
     currentUser: {},
     userList: [],
     userDetail: {},
+    userListCount: 0,
+    userLoading: false,
   },
 
   effects: {
     *fetch(_, { call, put }) {
+      yield put({
+        type: 'setUserLoading',
+        payload: {
+          loading: true,
+        },
+      });
       const response = yield call(queryUsers);
       yield put({
         type: 'save',
         payload: response,
       });
+      yield put({
+        type: 'setUserLoading',
+        payload: {
+          loading: false,
+        },
+      });
     },
     *fetchCurrent(_, { call, put }) {
+      yield put({
+        type: 'setUserLoading',
+        payload: {
+          loading: true,
+        },
+      });
       const response = yield call(queryCurrent);
       yield put({
         type: 'saveCurrentUser',
         payload: response,
       });
+      yield put({
+        type: 'setUserLoading',
+        payload: {
+          loading: false,
+        },
+      });
     },
-    *fetchUserList(_, { call, put }) {
-      const response = yield call(query_user_list);
+    *fetchUserList({ payload }, { call, put }) {
+      yield put({
+        type: 'setUserLoading',
+        payload: {
+          loading: true,
+        },
+      });
+      const pagination = payload.pagination || {};
+      const where = getQueryWhere(payload.queryInfo);
+      const query = {
+        limit: pagination.pageSize || 10,
+        page: pagination.current || 1,
+      };
+      if (Object.keys(where).length > 0) {
+        query['where'] = where;
+      }
+      const response = yield call(query_user_list, JSON.stringify(query));
+      console.log('response', response);
       yield put({
         type: 'setUserList',
         payload: response,
       });
+      yield put({
+        type: 'setUserLoading',
+        payload: {
+          loading: false,
+        },
+      });
     },
 
     *fetchUserDetail({ payload }, { call, put }) {
+      yield put({
+        type: 'setUserLoading',
+        payload: {
+          loading: true,
+        },
+      });
       const response = yield call(query_user_detail, payload.id, payload.params);
       yield put({
         type: 'setUserDetail',
         payload: response,
+      });
+      yield put({
+        type: 'setUserLoading',
+        payload: {
+          loading: false,
+        },
+      });
+    },
+    *deleteUserList({ payload }, { call, put }) {
+      yield put({
+        type: 'setUserLoading',
+        payload: {
+          loading: true,
+        },
+      });
+      const response = yield call(delete_user, payload.id);
+      if (response._id) {
+        message.success('删除成功!');
+
+        yield put({
+          type: 'fetchUserList',
+          payload: payload,
+        });
+      } else {
+        yield put({
+          type: 'errorCodeMessage',
+          payload: response,
+        });
+      }
+      yield put({
+        type: 'setUserLoading',
+        payload: {
+          loading: false,
+        },
       });
     },
     errorCodeMessage({ payload }, { call, put }) {
@@ -124,12 +217,19 @@ const UserModel: UserModelType = {
       return {
         ...state,
         userList: action.payload.data || [],
+        userListCount: action.payload.total || 0,
       };
     },
     setUserDetail(state, action) {
       return {
         ...state,
         userDetail: action.payload || {},
+      };
+    },
+    setUserLoading(state, { payload }) {
+      return {
+        ...state,
+        userLoading: payload.loading || false,
       };
     },
   },

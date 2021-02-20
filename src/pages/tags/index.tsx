@@ -141,8 +141,8 @@ const TagsPage: React.FC<TagListProps> = (props) => {
             title="确定要删除吗?"
             onConfirm={(e) => confirm(e, record)}
             // onCancel={cancel}
-            okText="Yes"
-            cancelText="No"
+            okText="确定"
+            cancelText="取消"
           >
             <a href="#">删除</a>
           </Popconfirm>

@@ -7,7 +7,18 @@ import {
   HistoryOutlined,
   HomeOutlined,
 } from '@ant-design/icons';
-import { Table, Tag, Space, Drawer, Tooltip as AntdTooltip, Badge } from 'antd';
+import {
+  Table,
+  Tag,
+  Space,
+  Drawer,
+  Tooltip as AntdTooltip,
+  Badge,
+  Input,
+  Button,
+  Spin,
+  Popconfirm,
+} from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './AccountsList.less';
 import { ConnectState } from '@/models/connect';
@@ -17,6 +28,8 @@ import { timestampToTime } from '@/utils/timestampToTime';
 interface AccountsListProps {
   dispatch: Dispatch;
   userList?: [];
+  userLoading: boolean;
+  userListCount: number;
 }
 interface currentDrawerUserDto {
   username?: string;
@@ -34,19 +47,66 @@ interface currentDrawerUserDto {
   updatedAt?: string;
 }
 
+interface queryInfoDto {
+  username: string;
+  nickname: string;
+}
+const initQueryInfo = {
+  username: '',
+  nickname: '',
+};
 const genderList = ['男', '女', '未知'];
 const AccountsList: React.FC<AccountsListProps> = (props) => {
-  const { dispatch, userList } = props;
+  const { dispatch, userList, userLoading, userListCount } = props;
   const my_id = JSON.parse(localStorage.getItem('currentUser') || '{}')['_id'];
-  console.log('userList===>', userList);
-  useEffect(() => {
-    dispatch({
-      type: 'user/fetchUserList',
-    });
-  }, []);
+
   const [visibleDrawer, setVisibleDrawer] = useState(false);
   const [currentDrawerUser, setCurrentDrawerUser] = useState<currentDrawerUserDto>({});
 
+  const [queryInfo, setQueryInfo] = useState<queryInfoDto>(initQueryInfo);
+
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: userListCount,
+  });
+  const fetchUserList = (p_pagination = {}, newfetched = false) => {
+    let currentPagination = p_pagination;
+    if (newfetched) {
+      currentPagination = { current: 1, pageSize: 10 };
+      setPagination({ ...pagination, ...currentPagination });
+    }
+    dispatch({
+      type: 'user/fetchUserList',
+      payload: {
+        pagination: currentPagination || pagination,
+        queryInfo,
+      },
+    });
+  };
+  useEffect(() => {
+    fetchUserList();
+  }, []);
+  useEffect(() => {
+    setPagination({ ...pagination, total: userListCount });
+  }, [userListCount]);
+
+  const changeQueryInfo = (key, value) => {
+    setQueryInfo({ ...queryInfo, [key]: value });
+  };
+
+  const handleTableChange = (pagination) => {
+    // console.log('pagination', pagination);
+    setPagination({ ...pagination });
+    fetchUserList(pagination);
+  };
+
+  const deleteUser = (e, record) => {
+    dispatch({
+      type: 'user/deleteUserList',
+      payload: { id: record._id, pagination: pagination, queryInfo },
+    });
+  };
   const columns = [
     {
       title: '手机号/账号',
@@ -135,48 +195,72 @@ const AccountsList: React.FC<AccountsListProps> = (props) => {
         <Space size="middle">
           <Link to={`/accounts/account-list/${record._id}`}>查看主页</Link>
           <a>禁言</a>
-          <a>删除</a>
+          <Popconfirm
+            title="确定要删除吗?"
+            onConfirm={(e) => deleteUser(e, record)}
+            // onCancel={cancel}
+            okText="确定"
+            cancelText="取消"
+          >
+            <a href="#">删除</a>
+          </Popconfirm>
         </Space>
       ),
-    },
-  ];
-
-  const data = [
-    {
-      key: '1',
-      phone: '13616565676',
-      nickname: 'John',
-      age: 19,
-      gender: 1,
-      address: 'New York No. 1 Lake Park',
-      tags: ['JAVA', 'JS'],
-    },
-    {
-      key: '2',
-      phone: '13616565676',
-      nickname: 'Snow',
-      age: 32,
-      gender: 2,
-      address: 'New York No. 1 Lake Park',
-      tags: ['React', 'JS'],
-    },
-    {
-      key: '3',
-      phone: '13616565676',
-      nickname: '张三李四',
-      age: 21,
-      gender: 0,
-      address: 'New York No. 1 Lake Park',
-      tags: ['PHP', 'Mysql'],
     },
   ];
 
   const tags = ['JS', 'React', 'Vue.js', 'JAVA', 'Python', 'Go', 'Antd Design'];
   return (
     <PageHeaderWrapper content=" 极课学院用户">
+      <div className="div_w_20 ma_b_20">
+        <div className={styles.search_items}>
+          <div className={styles.search_item}>
+            <div className={styles.label}>账号:</div>
+            <div className={styles.info}>
+              <Input
+                value={queryInfo.username}
+                onChange={(e) => changeQueryInfo('username', e.target.value)}
+              />
+            </div>
+          </div>
+          <div className={styles.search_item}>
+            <div className={styles.label}>昵称:</div>
+            <div className={styles.info}>
+              <Input
+                value={queryInfo.nickname}
+                onChange={(e) => changeQueryInfo('nickname', e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className={styles.search_item}>
+            <div className={styles.btns}>
+              <Button
+                className="ma_r_10"
+                onClick={() => {
+                  setQueryInfo(initQueryInfo);
+                }}
+              >
+                重置
+              </Button>
+              <Button type="primary" onClick={() => fetchUserList({}, true)}>
+                查询
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="div_w_20">
         <div>
-          <Table columns={columns} dataSource={userList} />
+          <Spin tip="Loading..." spinning={userLoading}>
+            <Table
+              columns={columns}
+              dataSource={userList}
+              pagination={pagination}
+              onChange={handleTableChange}
+            />
+          </Spin>
+
           <Drawer
             // className="div_w_20"
             width={400}
@@ -256,9 +340,11 @@ const AccountsList: React.FC<AccountsListProps> = (props) => {
   );
 };
 // export default connect()(AccountsList);
-export default connect(({ user }: ConnectState) => ({
+export default connect(({ user }) => ({
   userList: user.userList.map((item: any) => {
     item.key = item._id;
     return item;
   }),
+  userListCount: user.userListCount,
+  userLoading: user.userLoading,
 }))(AccountsList);

@@ -17,7 +17,7 @@ import {
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './index.less';
 import defaultUrl from '@/pages/config';
-
+import { setSubStr } from '@/utils/utilFuncs';
 interface DocumentListProps {
   dispatch: Dispatch;
   documentList: [];
@@ -70,11 +70,16 @@ const DocumentsPage: React.FC<DocumentListProps> = (props) => {
       title: '文档名称',
       key: 'name',
       dataIndex: 'name',
+      width: 200,
     },
     {
       title: '文档简介',
       key: 'introduce',
       dataIndex: 'introduce',
+      width: 500,
+      render: (text) => {
+        return setSubStr(text, 80);
+      },
     },
     {
       title: '类型',

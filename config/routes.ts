@@ -99,14 +99,6 @@
                 // authority: ['admin'],
                 hideInMenu: true,
               },
-              {
-                path: '/accounts/article',
-                name: '文章',
-                icon: 'user',
-                component: './accounts/Article',
-                // authority: ['admin'],
-                // hideInMenu: true,
-              },
             ],
           },
           {
