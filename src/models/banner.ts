@@ -43,11 +43,8 @@ const Model = {
         },
       });
       const response = yield call(add_banner, payload.params);
-      if (response.status === 200) {
-        yield put({
-          type: 'user/successCodeMessage',
-          payload: response,
-        });
+      if (response._id) {
+        message.success('添加成功!');
 
         yield put({
           type: 'fetchBannerList',

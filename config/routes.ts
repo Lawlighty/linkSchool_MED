@@ -45,6 +45,7 @@
               },
             ],
           },
+
           {
             path: '/banners',
             name: '轮播图',
@@ -80,7 +81,7 @@
           {
             path: '/accounts',
             name: '用户',
-            icon: 'user',
+            icon: 'usergroupAdd',
             // component: './accounts/accounts',
             // authority: ['admin'],
             routes: [
@@ -98,6 +99,29 @@
                 component: './accounts/AccountDetail/Center',
                 // authority: ['admin'],
                 hideInMenu: true,
+              },
+            ],
+          },
+          {
+            path: '/account',
+            name: '我的',
+            icon: 'user',
+            // component: './accounts/accounts',
+            // authority: ['admin'],
+            routes: [
+              {
+                path: '/account/center',
+                name: '个人中心',
+                icon: 'user',
+                component: './accounts/AccountDetail/Center',
+                // authority: ['admin'],
+              },
+              {
+                path: '/account/settings',
+                name: '个人设置',
+                icon: 'user',
+                component: './accounts/AccountSeeting/index',
+                // authority: ['admin'],
               },
             ],
           },

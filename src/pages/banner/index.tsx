@@ -26,10 +26,15 @@ interface BannerListProps {
 }
 
 const { Option } = Select;
+const initBanner = {
+  name: '',
+  type: 'HOME_PAGE',
+  img: '',
+};
 const BannersPage: React.FC<BannerListProps> = (props) => {
   const { dispatch, bannerList, bannerListCount, bannerLoading } = props;
 
-  const [currentBanner, setCurrentBanner] = useState<any>({});
+  const [currentBanner, setCurrentBanner] = useState<any>(initBanner);
   const [visible, setVisible] = useState<boolean>(false);
   // 图片上传
   const [loading, setLoading] = useState<boolean>(false);
@@ -100,17 +105,19 @@ const BannersPage: React.FC<BannerListProps> = (props) => {
     reader.readAsDataURL(img);
   };
   const handleChange = (info) => {
-    console.log('handleChange', info);
     if (info.file.status === 'uploading') {
       setLoading(true);
       return;
     }
     if (info.file.status === 'done') {
+      console.log('response', info.file.response.url);
+      setCurrentBanner({ ...currentBanner, img: info.file.response.url });
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (imageUrl) => {
-        setLoading(true);
-        setCurrentBanner({ ...currentBanner, img: imageUrl });
-      });
+      // getBase64(info.file.originFileObj, (imageUrl) => {
+      //   console.log('imageUrl', imageUrl);
+      //   setLoading(true);
+      //   setCurrentBanner({ ...currentBanner, img: imageUrl });
+      // });
     }
   };
 
@@ -218,7 +225,11 @@ const BannersPage: React.FC<BannerListProps> = (props) => {
           <div className={styles.item}>
             <div className={styles.label}>图片类型</div>
             <div className={styles.info}>
-              <Select defaultValue="HOME_PAGE" style={{ width: 120 }}>
+              <Select
+                value={currentBanner.type}
+                style={{ width: 120 }}
+                onChange={(e) => changeCurrentTag('type', e)}
+              >
                 <Option value="HOME_PAGE">首页</Option>
               </Select>
             </div>
@@ -238,7 +249,7 @@ const BannersPage: React.FC<BannerListProps> = (props) => {
                 method="post"
               >
                 {currentBanner.img ? (
-                  <img src={currentBanner.img} alt="图片" style={{ width: '100%' }} />
+                  <img src={currentBanner.img} alt="图片" style={{ height: '100%' }} />
                 ) : (
                   uploadButton
                 )}

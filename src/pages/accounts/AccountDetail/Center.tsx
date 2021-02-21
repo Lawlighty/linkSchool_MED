@@ -27,13 +27,17 @@ const UserCenter: React.FC<any> = (props) => {
     console.log(key);
   };
   console.log('userDetail', userDetail);
+  console.log('match', match);
   useEffect(() => {
     // 根据url 查询信息
-    const user_id = match.params.id;
-    dispatch({
-      type: 'user/fetchUserDetail',
-      payload: { id: user_id, params: {} },
-    });
+    const user_id =
+      match.params.id || JSON.parse(localStorage.getItem('currentUser') || '{}')['_id'];
+    if (user_id) {
+      dispatch({
+        type: 'user/fetchUserDetail',
+        payload: { id: user_id, params: {} },
+      });
+    }
   }, []);
 
   return (

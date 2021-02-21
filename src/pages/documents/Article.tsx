@@ -147,10 +147,11 @@ const Article: React.FC<{}> = (props) => {
     }
     if (info.file.status === 'done') {
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (imageUrl) => {
-        setLoading(true);
-        setDocument({ ...document, cover: imageUrl });
-      });
+      setDocument({ ...document, cover: info.file.response.url });
+      // getBase64(info.file.originFileObj, (imageUrl) => {
+      //   setLoading(true);
+      //   setDocument({ ...document, cover: imageUrl });
+      // });
     }
   };
 
