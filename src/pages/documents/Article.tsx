@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { connect, Link, history } from 'umi';
 import { LoadingOutlined, PlusOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import { Tooltip as AntdTooltip, Steps, Button, message, Input, Select, Upload } from 'antd';
+import {
+  Tooltip as AntdTooltip,
+  Steps,
+  Button,
+  message,
+  Input,
+  Select,
+  Upload,
+  InputNumber,
+} from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './Article.less';
 import MEDitor from '@uiw/react-md-editor';
@@ -217,6 +226,29 @@ const Article: React.FC<{}> = (props) => {
                       changeDocument('introduce', e.target.value);
                     }}
                   />
+                </div>
+              </div>
+              <div className="flex flex_a_c margin_20">
+                <div className={styles.input_title}>价格:</div>
+                <div className={`${styles.input_input} flex_a_c`}>
+                  <InputNumber
+                    className="flex_1"
+                    formatter={(value) => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    value={document.price}
+                    onChange={(e) => {
+                      changeDocument('price', e);
+                    }}
+                  />
+                  <div className="ma_r_20">(普通)</div>
+                  <InputNumber
+                    className="flex_1"
+                    formatter={(value) => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    value={document.sprice}
+                    onChange={(e) => {
+                      changeDocument('sprice', e);
+                    }}
+                  />
+                  <div>(VIP)</div>
                 </div>
               </div>
             </div>

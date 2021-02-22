@@ -186,7 +186,7 @@ const BannersPage: React.FC<BannerListProps> = (props) => {
             type="primary"
             className="ma_b_10"
             onClick={() => {
-              setCurrentBanner({});
+              setCurrentBanner(initBanner);
               setVisible(true);
             }}
           >
