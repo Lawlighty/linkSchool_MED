@@ -111,7 +111,7 @@ const UserModel = {
         },
       });
       const pagination = payload.pagination || {};
-      const where = getQueryWhere(payload.queryInfo);
+      const where = getQueryWhere(payload.queryInfo || {});
       const query = {
         limit: pagination.pageSize || 10,
         page: pagination.current || 1,

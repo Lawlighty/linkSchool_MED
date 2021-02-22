@@ -10,6 +10,7 @@ import {
   Select,
   Upload,
   InputNumber,
+  Radio,
 } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './Article.less';
@@ -21,7 +22,7 @@ import { doc } from 'prettier';
 
 const { Step } = Steps;
 const { TextArea } = Input;
-
+const { Option } = Select;
 const steps = [
   {
     title: '标题信息',
@@ -41,7 +42,7 @@ const initDocument = {
   content: mk_inti_string,
 };
 const Article: React.FC<{}> = (props) => {
-  const { dispatch, currentDocument } = props;
+  const { dispatch, currentDocument, userList } = props;
   // const [value, setValue] = useState('**Hello world!!!**');
   // markdown 内容
   // const [value, setValue] = useState(mk_inti_string);
@@ -68,8 +69,25 @@ const Article: React.FC<{}> = (props) => {
       },
     });
   };
+  const fetchUserList = (nickname: string, isInit = false) => {
+    console.log('查询用户');
+    const payload = {};
+    if (isInit) {
+      payload['pagination'] = { current: 1, pageSize: 10 };
+    } else {
+      const queryInfo = {
+        nickname,
+      };
+      payload['queryInfo'] = queryInfo;
+    }
+    console.log('payload==>', payload);
+    dispatch({
+      type: 'user/fetchUserList',
+      payload: payload,
+    });
+  };
   const addDocument = () => {
-    let nowdocument = document;
+    const nowdocument = document;
     nowdocument['cover'] =
       nowdocument['cover'] || 'https://a1.jikexueyuan.com/home/201507/22/ff2e/55af4bf0d4eed.jpg';
     dispatch({
@@ -94,11 +112,10 @@ const Article: React.FC<{}> = (props) => {
     } else {
       clearDocumentDetail();
     }
-    console.log('初始化document', document);
+    fetchUserList('', true);
   }, []);
   useEffect(() => {
     if (history.location.pathname.indexOf('create') < 0) {
-      console.log('更新document', currentDocument);
       setDocument({ ...currentDocument });
     }
   }, [currentDocument]);
@@ -162,6 +179,10 @@ const Article: React.FC<{}> = (props) => {
       //   setDocument({ ...document, cover: imageUrl });
       // });
     }
+  };
+  const onSearch = (val) => {
+    // console.log('val: ', val);
+    fetchUserList(val, false);
   };
 
   const uploadButton = (
@@ -251,6 +272,50 @@ const Article: React.FC<{}> = (props) => {
                   <div>(VIP)</div>
                 </div>
               </div>
+              <div className="flex flex_a_c margin_20">
+                <div className={styles.input_title}>设置:</div>
+                <div className={`${styles.input_input} flex_a_c`}>
+                  <Radio.Group
+                    onChange={(e) => {
+                      changeDocument('stick', e.target.value);
+                    }}
+                    value={document.stick}
+                  >
+                    <Radio value={true}>置顶</Radio>
+                    <Radio value={false}>不置顶</Radio>
+                  </Radio.Group>
+
+                  <Radio.Group
+                    onChange={(e) => {
+                      changeDocument('recommend', e.target.value);
+                    }}
+                    value={document.recommend}
+                  >
+                    <Radio value={true}>推荐</Radio>
+                    <Radio value={false}>不推荐</Radio>
+                  </Radio.Group>
+                </div>
+              </div>
+              <div className="flex flex_a_c margin_20">
+                <div className={styles.input_title}>作者:</div>
+                <div className={`${styles.input_input} flex_a_c`}>
+                  <Select
+                    showSearch
+                    onSearch={onSearch}
+                    onChange={(e) => {
+                      changeDocument('author', [e]);
+                    }}
+                    style={{ minWidth: 200 }}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {userList.map((item) => (
+                      <Option value={item._id}>{`${item.nickname}(${item.username})`}</Option>
+                    ))}
+                  </Select>
+                </div>
+              </div>
             </div>
           ) : null}
           {current === 1 ? (
@@ -321,6 +386,7 @@ const Article: React.FC<{}> = (props) => {
     </PageHeaderWrapper>
   );
 };
-export default connect(({ document }) => ({
+export default connect(({ document, user }) => ({
   currentDocument: document.currentDocument,
+  userList: user.userList,
 }))(Article);
