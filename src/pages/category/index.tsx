@@ -24,6 +24,7 @@ import {
 } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './index.less';
+import { getColorByStrLength } from '@/utils/utilFuncs';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -120,7 +121,7 @@ const CategorysPage: React.FC<CategoryListProps> = (props) => {
       key: 'name',
       dataIndex: 'name',
       render: (text) => {
-        let color = text.length <= 4 ? 'geekblue' : text.length <= 6 ? 'green' : 'volcano';
+        const color = getColorByStrLength(text);
         // if (text === 'JAVA') {
         //   color = 'volcano';
         // }
@@ -138,7 +139,7 @@ const CategorysPage: React.FC<CategoryListProps> = (props) => {
       render: (text) => {
         if (text) {
           const p_name = text.name || '';
-          let color = p_name.length <= 4 ? 'geekblue' : p_name.length <= 6 ? 'green' : 'volcano';
+          const color = getColorByStrLength(p_name);
           // if (text === 'JAVA') {
           //   color = 'volcano';
           // }

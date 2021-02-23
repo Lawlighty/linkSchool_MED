@@ -5,7 +5,7 @@ import {
   Table,
   Space,
   Select,
-  Tooltip as AntdTooltip,
+  Tag,
   Button,
   Modal,
   Input,
@@ -18,6 +18,7 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './index.less';
 import defaultUrl from '@/pages/config';
 import { setSubStr } from '@/utils/utilFuncs';
+import { getColorByStrLength } from '@/utils/utilFuncs';
 interface DocumentListProps {
   dispatch: Dispatch;
   documentList: [];
@@ -138,6 +139,21 @@ const DocumentsPage: React.FC<DocumentListProps> = (props) => {
       key: 'category',
       dataIndex: 'category',
       width: 100,
+      render: (text) => {
+        if (text) {
+          const p_name = text.name || '';
+          const color = getColorByStrLength(p_name);
+          // if (text === 'JAVA') {
+          //   color = 'volcano';
+          // }
+          return (
+            <Tag color={color} key={p_name}>
+              {p_name.toUpperCase()}
+            </Tag>
+          );
+        }
+        return '';
+      },
     },
     {
       title: '置顶',

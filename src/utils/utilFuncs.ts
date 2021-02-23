@@ -19,4 +19,10 @@ function getQueryWhere(query: object) {
   });
   return currentQuery;
 }
-export { setSubStr, getQueryWhere };
+
+//  根据字符串长度返回颜色
+function getColorByStrLength(str: string) {
+  const color = str.length <= 4 ? 'geekblue' : str.length <= 6 ? 'green' : 'volcano';
+  return color;
+}
+export { setSubStr, getQueryWhere, getColorByStrLength };

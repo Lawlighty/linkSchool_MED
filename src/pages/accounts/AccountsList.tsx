@@ -146,11 +146,11 @@ const AccountsList: React.FC<AccountsListProps> = (props) => {
       dataIndex: 'nickname',
       key: 'nickname',
     },
-    {
-      title: '年龄',
-      dataIndex: 'age',
-      key: 'age',
-    },
+    // {
+    //   title: '年龄',
+    //   dataIndex: 'age',
+    //   key: 'age',
+    // },
     {
       title: '性别',
       dataIndex: 'gender',
