@@ -53,6 +53,18 @@
             component: './banner/index',
           },
           {
+            path: '/tags',
+            name: '标签',
+            icon: 'tag',
+            component: './tags/index',
+          },
+          {
+            path: '/categorys',
+            name: '分类',
+            icon: 'paperClip',
+            component: './category/index',
+          },
+          {
             path: '/documents',
             name: '文档',
             icon: 'read',
@@ -72,12 +84,7 @@
             // authority: ['admin'],
             hideInMenu: true,
           },
-          {
-            path: '/tags',
-            name: '标签',
-            icon: 'tag',
-            component: './tags/index',
-          },
+
           {
             path: '/accounts',
             name: '用户',

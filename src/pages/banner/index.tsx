@@ -31,6 +31,10 @@ const initBanner = {
   type: 'HOME_PAGE',
   img: '',
 };
+
+const BannerObj = {
+  HOME_PAGE: '首页',
+};
 const BannersPage: React.FC<BannerListProps> = (props) => {
   const { dispatch, bannerList, bannerListCount, bannerLoading } = props;
 
@@ -131,6 +135,9 @@ const BannersPage: React.FC<BannerListProps> = (props) => {
       title: '类型',
       key: 'type',
       dataIndex: 'type',
+      render: (text) => {
+        return text ? BannerObj[text] : '';
+      },
     },
     {
       title: '图片预览',
@@ -249,7 +256,11 @@ const BannersPage: React.FC<BannerListProps> = (props) => {
                 method="post"
               >
                 {currentBanner.img ? (
-                  <img src={currentBanner.img} alt="图片" style={{ height: '100%' }} />
+                  <img
+                    src={currentBanner.img}
+                    alt="图片"
+                    style={{ height: '100%', maxWidth: '100%' }}
+                  />
                 ) : (
                   uploadButton
                 )}

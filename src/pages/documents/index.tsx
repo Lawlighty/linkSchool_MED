@@ -100,7 +100,21 @@ const DocumentsPage: React.FC<DocumentListProps> = (props) => {
       title: '作者',
       key: 'author',
       dataIndex: 'author',
-      width: 100,
+      width: 200,
+      render: (text, record) => {
+        let author = '';
+        if (text && text.nickname) {
+          author = `${text.nickname}(${text.username})`;
+        } else if (text && text.username) {
+          author = `(${text.username})`;
+        }
+
+        return !text ? (
+          <div>未知</div>
+        ) : (
+          <Link to={`/accounts/account-list/${text._id}`}>{author}</Link>
+        );
+      },
     },
     {
       title: '文档简介',
@@ -121,8 +135,8 @@ const DocumentsPage: React.FC<DocumentListProps> = (props) => {
     },
     {
       title: '类型',
-      key: 'type',
-      dataIndex: 'type',
+      key: 'category',
+      dataIndex: 'category',
       width: 100,
     },
     {

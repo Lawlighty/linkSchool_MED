@@ -40,9 +40,11 @@ const steps = [
 
 const initDocument = {
   content: mk_inti_string,
+  stick: false,
+  recommend: false,
 };
 const Article: React.FC<{}> = (props) => {
-  const { dispatch, currentDocument, userList } = props;
+  const { dispatch, currentDocument, userList, categoryParentList } = props;
   // const [value, setValue] = useState('**Hello world!!!**');
   // markdown 内容
   // const [value, setValue] = useState(mk_inti_string);
@@ -86,8 +88,27 @@ const Article: React.FC<{}> = (props) => {
       payload: payload,
     });
   };
+
+  const fetchParentCategorys = (name: string, isInit = false) => {
+    const payload = {};
+    if (isInit) {
+      payload['pagination'] = { current: 1, pageSize: 10 };
+    } else {
+      const queryInfo = {
+        name,
+      };
+      payload['queryInfo'] = queryInfo;
+    }
+    dispatch({
+      type: 'category/fetchParentCategoryList',
+      payload: payload,
+    });
+  };
   const addDocument = () => {
     const nowdocument = document;
+    // if (nowdocument.author) {
+    //   nowdocument['author'] = nowdocument.author._id;
+    // }
     nowdocument['cover'] =
       nowdocument['cover'] || 'https://a1.jikexueyuan.com/home/201507/22/ff2e/55af4bf0d4eed.jpg';
     dispatch({
@@ -98,10 +119,15 @@ const Article: React.FC<{}> = (props) => {
     });
   };
   const updateDocument = () => {
+    const nowdocument = document;
+    console.log('nowdocument', nowdocument);
+    // if (nowdocument.author) {
+    //   nowdocument['author'] = nowdocument.author._id;
+    // }
     dispatch({
       type: 'document/updateDocumentList',
       payload: {
-        params: { ...document, content: JSON.stringify(document.content) },
+        params: { ...nowdocument, content: JSON.stringify(nowdocument.content) },
       },
     });
   };
@@ -113,6 +139,7 @@ const Article: React.FC<{}> = (props) => {
       clearDocumentDetail();
     }
     fetchUserList('', true);
+    fetchParentCategorys('');
   }, []);
   useEffect(() => {
     if (history.location.pathname.indexOf('create') < 0) {
@@ -141,6 +168,8 @@ const Article: React.FC<{}> = (props) => {
   };
 
   const changeDocument = (key, value) => {
+    console.log('key', key);
+    console.log('value', value);
     setDocument({ ...document, [key]: value });
   };
 
@@ -183,6 +212,10 @@ const Article: React.FC<{}> = (props) => {
   const onSearch = (val) => {
     // console.log('val: ', val);
     fetchUserList(val, false);
+  };
+  const onSearchCate = (val) => {
+    // console.log('val: ', val);
+    fetchParentCategorys(val);
   };
 
   const uploadButton = (
@@ -281,7 +314,7 @@ const Article: React.FC<{}> = (props) => {
                     }}
                     value={document.stick}
                   >
-                    <Radio value={true}>置顶</Radio>
+                    <Radio value>置顶</Radio>
                     <Radio value={false}>不置顶</Radio>
                   </Radio.Group>
 
@@ -291,7 +324,7 @@ const Article: React.FC<{}> = (props) => {
                     }}
                     value={document.recommend}
                   >
-                    <Radio value={true}>推荐</Radio>
+                    <Radio value>推荐</Radio>
                     <Radio value={false}>不推荐</Radio>
                   </Radio.Group>
                 </div>
@@ -303,15 +336,54 @@ const Article: React.FC<{}> = (props) => {
                     showSearch
                     onSearch={onSearch}
                     onChange={(e) => {
-                      changeDocument('author', [e]);
+                      changeDocument('author', e);
                     }}
+                    value={
+                      document.author
+                        ? document.author._id
+                          ? document.author._id
+                          : document.author
+                        : null
+                    }
                     style={{ minWidth: 200 }}
                     filterOption={(input, option) =>
                       option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                     }
                   >
                     {userList.map((item) => (
-                      <Option value={item._id}>{`${item.nickname}(${item.username})`}</Option>
+                      <Option
+                        key={item._id}
+                        value={item._id}
+                      >{`${item.nickname}(${item.username})`}</Option>
+                    ))}
+                  </Select>
+                </div>
+              </div>
+              <div className="flex flex_a_c margin_20">
+                <div className={styles.input_title}>分类:</div>
+                <div className={`${styles.input_input} flex_a_c`}>
+                  <Select
+                    showSearch
+                    onSearch={onSearchCate}
+                    onChange={(e) => {
+                      changeDocument('category', e);
+                    }}
+                    value={
+                      document.category
+                        ? document.category._id
+                          ? document.category._id
+                          : document.category
+                        : null
+                    }
+                    style={{ minWidth: 200 }}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {categoryParentList.map((item) => (
+                      <Option key={item._id} value={item._id}>
+                        {item.name}
+                      </Option>
                     ))}
                   </Select>
                 </div>
@@ -370,23 +442,20 @@ const Article: React.FC<{}> = (props) => {
                 {/* 下一步 */}
               </Button>
             )}
-            {/* {current === steps.length - 1 && (
-              <Button type="primary" onClick={() => message.success('Processing complete!')}>
-                完成
-              </Button>
-            )}
-            {current > 0 && (
+
+            {current === 1 && (
               <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
                 上一步
               </Button>
-            )} */}
+            )}
           </div>
         </div>
       </div>
     </PageHeaderWrapper>
   );
 };
-export default connect(({ document, user }) => ({
+export default connect(({ document, user, category }) => ({
   currentDocument: document.currentDocument,
   userList: user.userList,
+  categoryParentList: category.categoryParentList,
 }))(Article);
