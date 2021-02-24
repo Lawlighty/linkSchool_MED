@@ -19,6 +19,8 @@ import {
   Radio,
   Card,
   Collapse,
+  Popconfirm,
+  Progress,
 } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './index.less';
@@ -52,7 +54,9 @@ const initCourse = {
   stick: false,
   recommend: false,
 };
-const initEpisode = {};
+const initEpisode = {
+  course: null,
+};
 const CreateCourse: React.FC<{}> = (props) => {
   const {
     dispatch,
@@ -72,6 +76,7 @@ const CreateCourse: React.FC<{}> = (props) => {
   const [episode, setEpisode] = useState<any>(initEpisode);
   // 图片上传
   const [loading, setLoading] = useState<boolean>(false);
+  const [percent, setPercent] = useState<number>(0);
 
   const clearCourseDetail = () => {
     dispatch({
@@ -88,7 +93,6 @@ const CreateCourse: React.FC<{}> = (props) => {
     });
   };
   const fetchUserList = (nickname: string, isInit = false) => {
-    console.log('查询用户');
     const payload = {};
     if (isInit) {
       payload['pagination'] = { current: 1, pageSize: 10 };
@@ -105,14 +109,16 @@ const CreateCourse: React.FC<{}> = (props) => {
     });
   };
   const fetchByCurrentEpisodeList = () => {
+    console.log('fetchByCurrentEpisodeList');
     const payload = {};
     const queryInfo = {
       _id: { $in: currentEpisodeList },
     };
     payload['queryInfo'] = queryInfo;
+    console.log('payload', payload);
     dispatch({
-      type: 'episode/fetchEpisodeList ',
-      payload: payload,
+      type: 'episode/fetchEpisodeList',
+      payload,
     });
   };
 
@@ -141,6 +147,7 @@ const CreateCourse: React.FC<{}> = (props) => {
     }
     fetchUserList('', true);
     fetchParentCategorys('');
+    // fetchByCurrentEpisodeList();
   }, []);
   useEffect(() => {
     if (history.location.pathname.indexOf('create') < 0) {
@@ -162,7 +169,10 @@ const CreateCourse: React.FC<{}> = (props) => {
       type: 'course/addCourseList',
       payload: {
         params: nowcourse,
+        updateEpisode: true,
       },
+    }).then(() => {
+      fetchByCurrentEpisodeList();
     });
   };
   const updateCourse = () => {
@@ -182,6 +192,7 @@ const CreateCourse: React.FC<{}> = (props) => {
       type: 'episode/addEpisodeList',
       payload: {
         params: nowepisode,
+        returnList: true,
       },
     });
   };
@@ -214,7 +225,6 @@ const CreateCourse: React.FC<{}> = (props) => {
       } else {
         addCourse();
       }
-      fetchByCurrentEpisodeList();
     }
     setCurrent(current + 1);
   };
@@ -234,6 +244,7 @@ const CreateCourse: React.FC<{}> = (props) => {
   };
   const toContinue = () => {
     setCurrent(0);
+    setPercent(0);
     setCourse(initCourse);
     dispatch({
       type: 'episode/clearCurrentEpisodeLis',
@@ -258,6 +269,8 @@ const CreateCourse: React.FC<{}> = (props) => {
   };
   const handleChange = (info) => {
     console.log('handleChange', info);
+    const currentpercent = info.file.percent ? parseInt(info.file.percent, 10) : 0;
+    setPercent(currentpercent);
     if (info.file.status === 'uploading') {
       setLoading(true);
       return;
@@ -364,6 +377,7 @@ const CreateCourse: React.FC<{}> = (props) => {
                 <div className={styles.input_title}>课程价格:</div>
                 <div className={`${styles.input_input} flex_a_c`}>
                   <InputNumber
+                    defaultValue={0}
                     className="flex_1"
                     formatter={(value) => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     value={course.price}
@@ -373,6 +387,7 @@ const CreateCourse: React.FC<{}> = (props) => {
                   />
                   <div className="ma_r_20">(普通)</div>
                   <InputNumber
+                    defaultValue={0}
                     className="flex_1"
                     formatter={(value) => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     value={course.sprice}
@@ -481,11 +496,11 @@ const CreateCourse: React.FC<{}> = (props) => {
                 </div>
                 <div className="flex margin_20">
                   <div className={styles.input_title}>视频文件:</div>
-                  <div className={`${styles.input_input} text_a_l`}>
+                  <div className={`${styles.input_input} text_a_l flex flex_a_c`}>
                     <Upload
                       name="file"
                       listType="picture"
-                      className="file-uploader-400"
+                      className=""
                       showUploadList={false}
                       // action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                       action={defaultUrl.UPLOAD_IMG_URL}
@@ -497,6 +512,11 @@ const CreateCourse: React.FC<{}> = (props) => {
                         Upload
                       </Button>
                     </Upload>
+                    {percent ? (
+                      <div className="ma_l_20 flex_1">
+                        <Progress percent={percent} />
+                      </div>
+                    ) : null}
                   </div>
                 </div>
                 <div className="flex margin_20">
@@ -543,6 +563,7 @@ const CreateCourse: React.FC<{}> = (props) => {
                 <Button
                   onClick={() => {
                     setEpisode(initEpisode);
+                    setPercent(0);
                   }}
                 >
                   新建课时
@@ -571,7 +592,7 @@ const CreateCourse: React.FC<{}> = (props) => {
 
                   {episodeList.length > 0 && (
                     <Collapse
-                      style={{ width: 400, marginLeft: 20 }}
+                      style={{ width: 400, marginLeft: 20, maxHeight: 350, overflowY: 'auto' }}
                       className="site-collapse-custom-collapse"
                       expandIcon={({ isActive }) => (
                         <CaretRightOutlined rotate={isActive ? 90 : 0} />
@@ -621,11 +642,22 @@ const CreateCourse: React.FC<{}> = (props) => {
 
           <div className="steps-action">
             {current < steps.length - 1 && (
-              <Button type="primary" onClick={() => next()}>
-                {current === 1 ? '提交' : '下一步'}
-
-                {/* 下一步 */}
-              </Button>
+              <>
+                {current === 1 ? (
+                  <Popconfirm
+                    title="如有课时请确认保存课时!"
+                    onConfirm={() => next()}
+                    okText="确定"
+                    cancelText="取消"
+                  >
+                    <Button type="primary">提交</Button>
+                  </Popconfirm>
+                ) : (
+                  <Button type="primary" onClick={() => next()}>
+                    下一步
+                  </Button>
+                )}
+              </>
             )}
 
             {current === 0 && (

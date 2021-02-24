@@ -76,6 +76,12 @@ const Model = {
           payload: { message: '添加成功' },
         });
 
+        if (payload.updateEpisode) {
+          yield put({
+            type: 'episode/updateEpisodeListOfCourse',
+            payload: { course_id: response._id },
+          });
+        }
         yield put({
           type: 'fetchCourseList',
           payload: payload,

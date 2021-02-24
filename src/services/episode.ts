@@ -21,6 +21,12 @@ export async function update_episode(params: any): Promise<any> {
     data: params,
   });
 }
+export async function update_episode_list_course(params: any): Promise<any> {
+  return request(`/api/episodes/updatepisodes`, {
+    method: 'PUT',
+    data: params,
+  });
+}
 export async function delete_episode(id: string): Promise<any> {
   return request(`/api/episodes/${id}`, {
     method: 'DELETE',

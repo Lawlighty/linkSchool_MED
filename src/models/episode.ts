@@ -4,7 +4,9 @@ import {
   add_episode,
   delete_episode,
   update_episode,
+  update_episode_list_course,
 } from '@/services/episode';
+import { getQueryWhere } from '@/utils/utilFuncs';
 import { message } from 'antd';
 
 const Model = {
@@ -20,17 +22,23 @@ const Model = {
 
   effects: {
     *fetchEpisodeList({ payload }, { call, put }) {
+      console.log('进入fetchEpisodeList');
       yield put({
         type: 'setEpisodeLoading',
         payload: {
           loading: true,
         },
       });
+      const query = {};
       const pagination = payload.pagination || {};
-      const query = {
-        limit: pagination.pageSize || 10,
-        page: pagination.current || 1,
-      };
+      const where = getQueryWhere(payload.queryInfo || {});
+      if (Object.keys(pagination).length > 0) {
+        query['limit'] = pagination.pageSize;
+        query['page'] = pagination.current;
+      }
+      if (Object.keys(where).length > 0) {
+        query['where'] = where;
+      }
       const response = yield call(query_episode_list, JSON.stringify(query));
       yield put({
         type: 'setEpisodeList',
@@ -42,6 +50,11 @@ const Model = {
           loading: false,
         },
       });
+    },
+    *getcurrentEpisodeList({ payload }, { call, put, select }) {
+      console.log('getcurrentEpisodeList');
+      const currentEpisodeList = yield select((state: any) => state.episode.currentEpisodeList);
+      console.log('现在的currentEpisodeList', currentEpisodeList);
     },
     *fetchEpisodeDetail({ payload }, { call, put }) {
       yield put({
@@ -130,6 +143,32 @@ const Model = {
         },
       });
     },
+    *updateEpisodeListOfCourse({ payload }, { select, call, put }) {
+      yield put({
+        type: 'setEpisodeLoading',
+        payload: {
+          loading: true,
+        },
+      });
+      const currentEpisodeList = yield select((state: any) => state.episode.currentEpisodeList);
+      const params = {
+        idList: currentEpisodeList,
+        course_id: payload.course_id,
+      };
+      const response = yield call(update_episode_list_course, params);
+      if (!response.status) {
+        yield put({
+          type: 'user/errorCodeMessage',
+          payload: response,
+        });
+      }
+      yield put({
+        type: 'setEpisodeLoading',
+        payload: {
+          loading: false,
+        },
+      });
+    },
     *deleteEpisodeList({ payload }, { call, put }) {
       yield put({
         type: 'setEpisodeLoading',
@@ -177,6 +216,7 @@ const Model = {
     setCurrentEpisodeList(state, { payload }) {
       const now_currentEpisodeList = state.currentEpisodeList;
       now_currentEpisodeList.push(payload.id);
+      console.log('现在的now_currentEpisodeList', now_currentEpisodeList);
       return {
         ...state,
         currentEpisodeList: now_currentEpisodeList,

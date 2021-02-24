@@ -224,7 +224,6 @@ const CoursesPage: React.FC<CourseListProps> = (props) => {
           <Popconfirm
             title="确定要删除吗?"
             onConfirm={(e) => confirm(e, record)}
-            // onCancel={cancel}
             okText="确定"
             cancelText="取消"
           >
