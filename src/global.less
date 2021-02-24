@@ -103,6 +103,9 @@ ol {
 .flex_1 {
   flex: 1;
 }
+.width_1 {
+  width: 100%;
+}
 .text_a_l {
   text-align: left;
 }
@@ -170,6 +173,14 @@ ol {
 .steps-action {
   margin-top: 24px;
 }
+[data-theme='compact'] .site-collapse-custom-collapse .site-collapse-custom-panel,
+.site-collapse-custom-collapse .site-collapse-custom-panel {
+  margin-bottom: 24px;
+  overflow: hidden;
+  background: #f7f7f7;
+  border: 0px;
+  border-radius: 2px;
+}
 @media (max-width: @screen-xs) {
   .ant-table {
     width: 100%;
@@ -192,6 +203,14 @@ ol {
     width: 200px !important;
     img {
       height: 100%;
+    }
+  }
+}
+.file-uploader-400 {
+  div {
+    width: 500px !important;
+    .picture-card {
+      height: 300px !important;
     }
   }
 }

@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { connect, Link, history } from 'umi';
-import { LoadingOutlined, PlusOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import {
+  LoadingOutlined,
+  PlusOutlined,
+  CheckCircleOutlined,
+  UploadOutlined,
+  CaretRightOutlined,
+} from '@ant-design/icons';
 import {
   Tooltip as AntdTooltip,
   Steps,
@@ -11,61 +17,71 @@ import {
   Upload,
   InputNumber,
   Radio,
+  Card,
+  Collapse,
 } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import styles from './Article.less';
+import styles from './index.less';
 import MEDitor from '@uiw/react-md-editor';
-import { mk_inti_string } from '../../../config/mk_init';
+import { mk_inti_string } from '../../../../config/mk_init';
 // import numeral from 'numeral';
 import defaultUrl from '@/pages/config';
-import { doc } from 'prettier';
 
+const { Panel } = Collapse;
+const { Meta } = Card;
 const { Step } = Steps;
 const { TextArea } = Input;
 const { Option } = Select;
 const steps = [
   {
-    title: '标题信息',
+    title: '课程信息',
     // content: 'First-content',
   },
   {
-    title: '主要内容',
+    title: '课时内容',
     // content: 'Second-content',
   },
   {
-    title: '完成发布',
+    title: '发布课程',
     // content: 'Last-content',
   },
 ];
 
-const initDocument = {
+const initCourse = {
   content: mk_inti_string,
   stick: false,
   recommend: false,
 };
-const Article: React.FC<{}> = (props) => {
-  const { dispatch, currentDocument, userList, categoryParentList } = props;
-  // const [value, setValue] = useState('**Hello world!!!**');
-  // markdown 内容
-  // const [value, setValue] = useState(mk_inti_string);
+const initEpisode = {};
+const CreateCourse: React.FC<{}> = (props) => {
+  const {
+    dispatch,
+    currentCourse,
+    userList,
+    categoryParentList,
+    currentEpisodeList,
+    episodeList,
+  } = props;
 
   // 步骤
   const [current, setCurrent] = React.useState(0);
 
-  // 文档
-  const [document, setDocument] = useState<any>(initDocument);
+  // 课程
+  const [course, setCourse] = useState<any>(initCourse);
+  // 课时
+  const [episode, setEpisode] = useState<any>(initEpisode);
   // 图片上传
   const [loading, setLoading] = useState<boolean>(false);
 
-  const clearDocumentDetail = () => {
+  const clearCourseDetail = () => {
     dispatch({
-      type: 'document/setDocumentDetail',
+      type: 'course/setCourseDetail',
       payload: {},
     });
   };
-  const fetchDocumentDetail = (id = '') => {
+  const fetchCourseDetail = (id = '') => {
     dispatch({
-      type: 'document/fetchDocumentDetail',
+      type: 'course/fetchCourseDetail',
       payload: {
         _id: id,
       },
@@ -88,6 +104,17 @@ const Article: React.FC<{}> = (props) => {
       payload: payload,
     });
   };
+  const fetchByCurrentEpisodeList = () => {
+    const payload = {};
+    const queryInfo = {
+      _id: { $in: currentEpisodeList },
+    };
+    payload['queryInfo'] = queryInfo;
+    dispatch({
+      type: 'episode/fetchEpisodeList ',
+      payload: payload,
+    });
+  };
 
   const fetchParentCategorys = (name: string, isInit = false) => {
     const payload = {};
@@ -104,64 +131,90 @@ const Article: React.FC<{}> = (props) => {
       payload: payload,
     });
   };
-  const addDocument = () => {
-    const nowdocument = document;
-    // nowdocument.content = document.content.toHTML();
-    // if (nowdocument.author) {
-    //   nowdocument['author'] = nowdocument.author._id;
-    // }
-    nowdocument['cover'] = nowdocument['cover'] || defaultUrl.default_cover;
-    dispatch({
-      type: 'document/addDocumentList',
-      payload: {
-        params: nowdocument,
-      },
-    });
-  };
-  const updateDocument = () => {
-    const nowdocument = document;
-    dispatch({
-      type: 'document/updateDocumentList',
-      payload: {
-        // params: { ...nowdocument, content: JSON.stringify(nowdocument.content) },
-        params: { ...nowdocument },
-      },
-    });
-  };
+
   useEffect(() => {
     if (history.location.pathname.indexOf('create') < 0) {
       // 编辑-->查询 文档信息
-      fetchDocumentDetail(history.location.pathname.split('/').pop());
+      fetchCourseDetail(history.location.pathname.split('/').pop());
     } else {
-      clearDocumentDetail();
+      clearCourseDetail();
     }
     fetchUserList('', true);
     fetchParentCategorys('');
   }, []);
   useEffect(() => {
     if (history.location.pathname.indexOf('create') < 0) {
-      if (currentDocument.category) {
-        fetchParentCategorys(currentDocument.category.name, false);
+      if (currentCourse.category) {
+        fetchParentCategorys(currentCourse.category.name, false);
       }
-      if (currentDocument.author) {
-        fetchUserList(currentDocument.author.nickname, false);
+      if (currentCourse.author) {
+        fetchUserList(currentCourse.author.nickname, false);
       }
-      setDocument({ ...currentDocument });
+      setCourse({ ...currentCourse });
     }
-  }, [currentDocument]);
+  }, [currentCourse]);
+
+  const addCourse = () => {
+    const nowcourse = course;
+    nowcourse['cover'] = nowcourse['cover'] || defaultUrl.default_cover;
+    nowcourse['episodes'] = currentEpisodeList || [];
+    dispatch({
+      type: 'course/addCourseList',
+      payload: {
+        params: nowcourse,
+      },
+    });
+  };
+  const updateCourse = () => {
+    const nowcourse = course;
+    dispatch({
+      type: 'course/updateCourseList',
+      payload: {
+        // params: { ...nowcourse, content: JSON.stringify(nowcourse.content) },
+        params: { ...nowcourse },
+      },
+    });
+  };
+
+  const addEpisode = () => {
+    const nowepisode = episode;
+    dispatch({
+      type: 'episode/addEpisodeList',
+      payload: {
+        params: nowepisode,
+      },
+    });
+  };
+  const updateEpisode = () => {
+    const nowepisode = episode;
+    dispatch({
+      type: 'episode/updateEpisodeList',
+      payload: {
+        params: { ...nowepisode },
+      },
+    });
+  };
+  const saveEpisode = () => {
+    if (episode._id) {
+      updateEpisode();
+    } else {
+      addEpisode();
+    }
+  };
 
   const next = () => {
-    if (!document.name) {
+    if (!course.name) {
       message.info('请输入标题');
       return;
     }
 
     if (current === 1) {
-      if (document._id) {
-        updateDocument();
+      if (course._id) {
+        updateCourse();
       } else {
-        addDocument();
+        addCourse();
       }
+      fetchByCurrentEpisodeList();
     }
     setCurrent(current + 1);
   };
@@ -170,15 +223,21 @@ const Article: React.FC<{}> = (props) => {
     setCurrent(current - 1);
   };
 
-  const changeDocument = (key, value) => {
+  const changeCourse = (key, value) => {
     console.log('key', key);
     console.log('value', value);
-    setDocument({ ...document, [key]: value });
+    setCourse({ ...course, [key]: value });
   };
 
+  const changeeEpisode = (key, value) => {
+    setEpisode({ ...episode, [key]: value });
+  };
   const toContinue = () => {
     setCurrent(0);
-    setDocument(initDocument);
+    setCourse(initCourse);
+    dispatch({
+      type: 'episode/clearCurrentEpisodeLis',
+    });
   };
   const beforeUpload = (file) => {
     console.log('beforeUpload', file);
@@ -205,10 +264,26 @@ const Article: React.FC<{}> = (props) => {
     }
     if (info.file.status === 'done') {
       // Get this url from response in real world.
-      setDocument({ ...document, cover: info.file.response.url });
+      setLoading(false);
+      setCourse({ ...course, cover: info.file.response.url });
       // getBase64(info.file.originFileObj, (imageUrl) => {
       //   setLoading(true);
-      //   setDocument({ ...document, cover: imageUrl });
+      //   setCourse({ ...course, cover: imageUrl });
+      // });
+    }
+  };
+  const handleChangeFile = (info) => {
+    console.log('handleChange', info);
+    if (info.file.status === 'uploading') {
+      setLoading(true);
+      return;
+    }
+    if (info.file.status === 'done') {
+      // Get this url from response in real world.
+      setEpisode({ ...episode, file: info.file.response.url });
+      // getBase64(info.file.originFileObj, (imageUrl) => {
+      setLoading(false);
+      //   setCourse({ ...course, cover: imageUrl });
       // });
     }
   };
@@ -240,19 +315,19 @@ const Article: React.FC<{}> = (props) => {
           {current === 0 ? (
             <div className="steps-content">
               <div className="flex flex_a_c margin_20">
-                <div className={styles.input_title}>文章标题:</div>
+                <div className={styles.input_title}>课程名称:</div>
                 <div className={styles.input_input}>
                   <Input
                     className="flex_1"
-                    value={document.name}
+                    value={course.name}
                     onChange={(e) => {
-                      changeDocument('name', e.target.value);
+                      changeCourse('name', e.target.value);
                     }}
                   />
                 </div>
               </div>
               <div className="flex margin_20">
-                <div className={styles.input_title}>文章图片:</div>
+                <div className={styles.input_title}>课程封面图:</div>
                 <div className={`${styles.input_input} text_a_l`}>
                   <Upload
                     name="file"
@@ -265,8 +340,8 @@ const Article: React.FC<{}> = (props) => {
                     onChange={handleChange}
                     method="post"
                   >
-                    {document.cover ? (
-                      <img src={document.cover} alt="图片" style={{ height: '100%' }} />
+                    {course.cover ? (
+                      <img src={course.cover} alt="图片" style={{ height: '100%' }} />
                     ) : (
                       uploadButton
                     )}
@@ -274,35 +349,35 @@ const Article: React.FC<{}> = (props) => {
                 </div>
               </div>
               <div className="flex flex_a_s margin_20">
-                <div className={styles.input_title}>文章简介:</div>
+                <div className={styles.input_title}>课程介绍:</div>
                 <div className={styles.input_input}>
                   <TextArea
                     rows={4}
-                    value={document.introduce}
+                    value={course.introduce}
                     onChange={(e) => {
-                      changeDocument('introduce', e.target.value);
+                      changeCourse('introduce', e.target.value);
                     }}
                   />
                 </div>
               </div>
               <div className="flex flex_a_c margin_20">
-                <div className={styles.input_title}>价格:</div>
+                <div className={styles.input_title}>课程价格:</div>
                 <div className={`${styles.input_input} flex_a_c`}>
                   <InputNumber
                     className="flex_1"
                     formatter={(value) => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                    value={document.price}
+                    value={course.price}
                     onChange={(e) => {
-                      changeDocument('price', e);
+                      changeCourse('price', e);
                     }}
                   />
                   <div className="ma_r_20">(普通)</div>
                   <InputNumber
                     className="flex_1"
                     formatter={(value) => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                    value={document.sprice}
+                    value={course.sprice}
                     onChange={(e) => {
-                      changeDocument('sprice', e);
+                      changeCourse('sprice', e);
                     }}
                   />
                   <div>(VIP)</div>
@@ -313,9 +388,9 @@ const Article: React.FC<{}> = (props) => {
                 <div className={`${styles.input_input} flex_a_c`}>
                   <Radio.Group
                     onChange={(e) => {
-                      changeDocument('stick', e.target.value);
+                      changeCourse('stick', e.target.value);
                     }}
-                    value={document.stick}
+                    value={course.stick}
                   >
                     <Radio value>置顶</Radio>
                     <Radio value={false}>不置顶</Radio>
@@ -323,9 +398,9 @@ const Article: React.FC<{}> = (props) => {
 
                   <Radio.Group
                     onChange={(e) => {
-                      changeDocument('recommend', e.target.value);
+                      changeCourse('recommend', e.target.value);
                     }}
-                    value={document.recommend}
+                    value={course.recommend}
                   >
                     <Radio value>推荐</Radio>
                     <Radio value={false}>不推荐</Radio>
@@ -333,20 +408,16 @@ const Article: React.FC<{}> = (props) => {
                 </div>
               </div>
               <div className="flex flex_a_c margin_20">
-                <div className={styles.input_title}>作者:</div>
+                <div className={styles.input_title}>课程作者:</div>
                 <div className={`${styles.input_input} flex_a_c`}>
                   <Select
                     showSearch
                     onSearch={onSearch}
                     onChange={(e) => {
-                      changeDocument('author', e);
+                      changeCourse('author', e);
                     }}
                     value={
-                      document.author
-                        ? document.author._id
-                          ? document.author._id
-                          : document.author
-                        : null
+                      course.author ? (course.author._id ? course.author._id : course.author) : null
                     }
                     style={{ minWidth: 200 }}
                     filterOption={(input, option) =>
@@ -363,19 +434,19 @@ const Article: React.FC<{}> = (props) => {
                 </div>
               </div>
               <div className="flex flex_a_c margin_20">
-                <div className={styles.input_title}>分类:</div>
+                <div className={styles.input_title}>所属分类:</div>
                 <div className={`${styles.input_input} flex_a_c`}>
                   <Select
                     showSearch
                     onSearch={onSearchCate}
                     onChange={(e) => {
-                      changeDocument('category', e);
+                      changeCourse('category', e);
                     }}
                     value={
-                      document.category
-                        ? document.category._id
-                          ? document.category._id
-                          : document.category
+                      course.category
+                        ? course.category._id
+                          ? course.category._id
+                          : course.category
                         : null
                     }
                     style={{ minWidth: 200 }}
@@ -395,15 +466,88 @@ const Article: React.FC<{}> = (props) => {
           ) : null}
           {current === 1 ? (
             <div className="steps-content">
+              <div>
+                <div className="flex flex_a_c margin_20">
+                  <div className={styles.input_title}>课时名称:</div>
+                  <div className={styles.input_input}>
+                    <Input
+                      className="flex_1"
+                      value={episode.name}
+                      onChange={(e) => {
+                        changeeEpisode('name', e.target.value);
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="flex margin_20">
+                  <div className={styles.input_title}>视频文件:</div>
+                  <div className={`${styles.input_input} text_a_l`}>
+                    <Upload
+                      name="file"
+                      listType="picture"
+                      className="file-uploader-400"
+                      showUploadList={false}
+                      // action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                      action={defaultUrl.UPLOAD_IMG_URL}
+                      // beforeUpload={beforeUpload}
+                      onChange={handleChangeFile}
+                      method="post"
+                    >
+                      <Button icon={<UploadOutlined />} loading={loading}>
+                        Upload
+                      </Button>
+                    </Upload>
+                  </div>
+                </div>
+                <div className="flex margin_20">
+                  {episode.file ? (
+                    <video
+                      style={{ width: '100%' }}
+                      src={episode.file}
+                      controlswidth="600"
+                      height="300"
+                      controls="controls"
+                      type="video/mp4"
+                    >
+                      <track default kind="captions" srcLang="en" />
+                      暂不支持
+                    </video>
+                  ) : null}
+                </div>
+              </div>
+              <div className="flex margin_20 width_1">
+                <div className={styles.row_title}>课时图文</div>
+              </div>
+
               <MEDitor
+                style={{ minWidth: 1000 }}
                 height={600}
-                value={document.content}
+                value={episode.textfile}
                 onChange={(e) => {
-                  setDocument({ ...document, content: e });
+                  setEpisode({ ...episode, textfile: e });
                 }}
               />
               <div style={{ padding: '50px 0 0 0' }} />
-              {/* <MEDitor.Markdown source={document.content} /> */}
+              {/* <MEDitor.Markdown source={course.content} /> */}
+
+              <div>
+                <Button
+                  type="primary"
+                  className="ma_r_10"
+                  onClick={() => {
+                    saveEpisode();
+                  }}
+                >
+                  保存课时
+                </Button>
+                <Button
+                  onClick={() => {
+                    setEpisode(initEpisode);
+                  }}
+                >
+                  新建课时
+                </Button>
+              </div>
             </div>
           ) : null}
           {current === 2 ? (
@@ -411,13 +555,51 @@ const Article: React.FC<{}> = (props) => {
               <div>
                 <CheckCircleOutlined className="font56 c_green margin_b_20" />
                 <div className="font24 c_0 margin_10">发布成功</div>
+                <div className="flex_a_s flex">
+                  <Card
+                    hoverable
+                    style={{ width: 400 }}
+                    cover={
+                      <img
+                        alt="example"
+                        src={course.cover ? course.cover : defaultUrl.default_cover}
+                      />
+                    }
+                  >
+                    <Meta title={course.name} description={course.introduce} />
+                  </Card>
+
+                  {episodeList.length > 0 && (
+                    <Collapse
+                      style={{ width: 400, marginLeft: 20 }}
+                      className="site-collapse-custom-collapse"
+                      expandIcon={({ isActive }) => (
+                        <CaretRightOutlined rotate={isActive ? 90 : 0} />
+                      )}
+                      onChange={(e) => {
+                        console.log(e);
+                      }}
+                    >
+                      {episodeList.map((item) => (
+                        <Panel
+                          header={item.name}
+                          key={item._id}
+                          className="site-collapse-custom-panel"
+                        >
+                          <p>也许有简介</p>
+                        </Panel>
+                      ))}
+                    </Collapse>
+                  )}
+                </div>
+
                 <div className="font24  margin_10">
                   <Button
                     className="ma_r_10"
                     type="primary"
                     onClick={() => {
                       if (history.location.pathname.indexOf('create') < 0) {
-                        history.push('/documents/create');
+                        history.push('/courses/create');
                       } else {
                         toContinue();
                       }
@@ -427,7 +609,7 @@ const Article: React.FC<{}> = (props) => {
                   </Button>
                   <Button
                     onClick={() => {
-                      history.push('/documents');
+                      history.push('/courses');
                     }}
                   >
                     返回列表
@@ -450,7 +632,7 @@ const Article: React.FC<{}> = (props) => {
               <Button
                 style={{ margin: '0 8px' }}
                 onClick={() => {
-                  history.push('/documents');
+                  history.push('/courses');
                 }}
               >
                 返回
@@ -468,8 +650,10 @@ const Article: React.FC<{}> = (props) => {
     </PageHeaderWrapper>
   );
 };
-export default connect(({ document, user, category }) => ({
-  currentDocument: document.currentDocument,
+export default connect(({ course, user, category, episode }) => ({
+  currentCourse: course.currentCourse,
   userList: user.userList,
   categoryParentList: category.categoryParentList,
-}))(Article);
+  currentEpisodeList: episode.currentEpisodeList,
+  episodeList: episode.episodeList,
+}))(CreateCourse);

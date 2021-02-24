@@ -53,10 +53,13 @@ const Model = {
       });
       const pagination = payload.pagination || {};
       const where = getQueryWhere(payload.queryInfo || {});
-      const query = {
-        limit: pagination.pageSize || 10,
-        page: pagination.current || 1,
-      };
+      let query = {};
+      if (Object.keys(pagination).length > 0) {
+        query = {
+          limit: pagination.pageSize || 10,
+          page: pagination.current || 1,
+        };
+      }
       if (Object.keys(where).length > 0) {
         query['where'] = where;
       }
