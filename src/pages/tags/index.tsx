@@ -23,6 +23,7 @@ import {
 } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './index.less';
+import { getColorByStrLength } from '@/utils/utilFuncs';
 
 interface TagListProps {
   dispatch: Dispatch;
@@ -112,10 +113,7 @@ const TagsPage: React.FC<TagListProps> = (props) => {
       key: 'name',
       dataIndex: 'name',
       render: (text) => {
-        let color = text.length <= 4 ? 'geekblue' : text.length <= 6 ? 'green' : 'volcano';
-        // if (text === 'JAVA') {
-        //   color = 'volcano';
-        // }
+        const color = getColorByStrLength(text);
         return (
           <Tag color={color} key={text}>
             {text.toUpperCase()}
@@ -199,15 +197,7 @@ const TagsPage: React.FC<TagListProps> = (props) => {
             <div className={styles.label}>预览效果</div>
             <div className={styles.info}>
               {currentTag.name && (
-                <Tag
-                  color={
-                    currentTag.name.length <= 4
-                      ? 'geekblue'
-                      : currentTag.name.length <= 6
-                      ? 'green'
-                      : 'volcano'
-                  }
-                >
+                <Tag color={getColorByStrLength(currentTag.name)}>
                   {currentTag.name.toUpperCase()}
                 </Tag>
               )}

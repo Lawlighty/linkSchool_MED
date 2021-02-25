@@ -72,7 +72,6 @@ const Article: React.FC<{}> = (props) => {
     });
   };
   const fetchUserList = (nickname: string, isInit = false) => {
-    console.log('查询用户');
     const payload = {};
     if (isInit) {
       payload['pagination'] = { current: 1, pageSize: 10 };
@@ -106,10 +105,6 @@ const Article: React.FC<{}> = (props) => {
   };
   const addDocument = () => {
     const nowdocument = document;
-    // nowdocument.content = document.content.toHTML();
-    // if (nowdocument.author) {
-    //   nowdocument['author'] = nowdocument.author._id;
-    // }
     nowdocument['cover'] = nowdocument['cover'] || defaultUrl.default_cover;
     dispatch({
       type: 'document/addDocumentList',
@@ -136,7 +131,7 @@ const Article: React.FC<{}> = (props) => {
       clearDocumentDetail();
     }
     fetchUserList('', true);
-    fetchParentCategorys('');
+    fetchParentCategorys('', true);
   }, []);
   useEffect(() => {
     if (history.location.pathname.indexOf('create') < 0) {

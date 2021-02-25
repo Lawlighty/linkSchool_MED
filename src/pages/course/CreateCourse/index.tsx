@@ -26,7 +26,6 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './index.less';
 import MEDitor from '@uiw/react-md-editor';
 import { mk_inti_string } from '../../../../config/mk_init';
-// import numeral from 'numeral';
 import defaultUrl from '@/pages/config';
 
 const { Panel } = Collapse;
@@ -234,8 +233,6 @@ const CreateCourse: React.FC<{}> = (props) => {
   };
 
   const changeCourse = (key, value) => {
-    console.log('key', key);
-    console.log('value', value);
     setCourse({ ...course, [key]: value });
   };
 
@@ -262,15 +259,9 @@ const CreateCourse: React.FC<{}> = (props) => {
     }
     return isJpgOrPng && isLt2M;
   };
-  const getBase64 = (img, callback) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-  };
   const handleChange = (info) => {
     console.log('handleChange', info);
-    const currentpercent = info.file.percent ? parseInt(info.file.percent, 10) : 0;
-    setPercent(currentpercent);
+
     if (info.file.status === 'uploading') {
       setLoading(true);
       return;
@@ -286,7 +277,9 @@ const CreateCourse: React.FC<{}> = (props) => {
     }
   };
   const handleChangeFile = (info) => {
-    console.log('handleChange', info);
+    console.log('handleChangeFile', info);
+    const currentpercent = info.file.percent ? parseInt(info.file.percent, 10) : 0;
+    setPercent(currentpercent);
     if (info.file.status === 'uploading') {
       setLoading(true);
       return;
@@ -301,11 +294,9 @@ const CreateCourse: React.FC<{}> = (props) => {
     }
   };
   const onSearch = (val) => {
-    // console.log('val: ', val);
     fetchUserList(val, false);
   };
   const onSearchCate = (val) => {
-    // console.log('val: ', val);
     fetchParentCategorys(val);
   };
 
@@ -552,6 +543,7 @@ const CreateCourse: React.FC<{}> = (props) => {
 
               <div>
                 <Button
+                  disabled={loading}
                   type="primary"
                   className="ma_r_10"
                   onClick={() => {

@@ -93,8 +93,8 @@
               },
               {
                 path: '/courses/course/:id',
-                name: '所属课时',
-                component: './course/index',
+                name: '课时',
+                component: './episode/index',
                 // authority: ['admin'],
                 hideInMenu: true,
               },
@@ -132,6 +132,34 @@
                 // authority: ['admin'],
                 hideInMenu: true,
               },
+            ],
+          },
+          {
+            path: '/questions',
+            name: '问答',
+            icon: 'questionCircle',
+            routes: [
+              {
+                path: '/questions',
+                name: '问答列表',
+                component: './questions/index',
+                // authority: ['admin'],
+                // hideInMenu: true,
+              },
+              // {
+              //   path: '/questions/create',
+              //   name: '新建问答',
+              //   component: './questions/Article',
+              //   // authority: ['admin'],
+              //   hideInMenu: true,
+              // },
+              // {
+              //   path: '/questions/:id',
+              //   name: '编辑问答',
+              //   component: './questions/Article',
+              //   // authority: ['admin'],
+              //   hideInMenu: true,
+              // },
             ],
           },
 
