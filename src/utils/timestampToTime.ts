@@ -32,4 +32,14 @@ function addZero(t) {
   }
   return t;
 }
-export { timestampToTime };
+
+// 世界时间转换成北京时间
+function utc2beijing(utc_datetime: any) {
+  if (!utc_datetime) {
+    return '';
+  }
+  const a = new Date(utc_datetime).getTime();
+  const beijing_datetime = timestampToTime(new Date(a));
+  return beijing_datetime;
+}
+export { timestampToTime, utc2beijing };

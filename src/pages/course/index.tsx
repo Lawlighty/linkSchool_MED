@@ -343,7 +343,7 @@ const CoursesPage: React.FC<CourseListProps> = (props) => {
             okText="确定"
             cancelText="取消"
           >
-            <a href="#">删除</a>
+            <div className="pointer c_red">删除</div>
           </Popconfirm>
         </Space>
       ),

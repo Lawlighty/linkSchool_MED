@@ -21,14 +21,14 @@
         routes: [
           {
             path: '/',
-            redirect: '/welcome',
+            redirect: '/dashboard/analyze',
           },
-          {
-            path: '/welcome',
-            name: 'welcome',
-            icon: 'smile',
-            component: './Welcome',
-          },
+          // {
+          //   path: '/welcome',
+          //   name: 'welcome',
+          //   icon: 'smile',
+          //   component: './Welcome',
+          // },
           {
             path: '/dashboard',
             name: '仪表盘',
@@ -226,12 +226,12 @@
               },
             ],
           },
-          {
-            name: 'list.table-list',
-            icon: 'table',
-            path: '/list',
-            component: './ListTableList',
-          },
+          // {
+          //   name: 'list.table-list',
+          //   icon: 'table',
+          //   path: '/list',
+          //   component: './ListTableList',
+          // },
           {
             component: './404',
           },

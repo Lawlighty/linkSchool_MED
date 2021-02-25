@@ -171,7 +171,7 @@ const BannersPage: React.FC<BannerListProps> = (props) => {
             okText="Yes"
             cancelText="No"
           >
-            <a href="#">删除</a>
+            <div className="pointer c_red">删除</div>
           </Popconfirm>
         </Space>
       ),

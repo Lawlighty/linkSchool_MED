@@ -170,7 +170,6 @@ const EpisodesPage: React.FC<EpisodeListProps> = (props) => {
       title: '图文信息',
       key: 'textfile',
       dataIndex: 'textfile',
-
       width: 200,
       render: (text, record) => {
         if (text) {

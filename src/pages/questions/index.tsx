@@ -19,6 +19,8 @@ import styles from './index.less';
 import defaultUrl from '@/pages/config';
 import { setSubStr } from '@/utils/utilFuncs';
 import { getColorByStrLength } from '@/utils/utilFuncs';
+import { utc2beijing } from '@/utils/timestampToTime';
+import MEDitor from '@uiw/react-md-editor';
 interface QuestionListProps {
   dispatch: Dispatch;
   questionList: [];
@@ -32,6 +34,7 @@ const QuestionsPage: React.FC<QuestionListProps> = (props) => {
 
   const [currentQuestion, setCurrentQuestion] = useState<any>({});
   const [visible, setVisible] = useState<boolean>(false);
+  const [visibleMEDitor, setVisibleMEDitor] = useState<boolean>(false);
 
   const [pagination, setPagination] = useState({
     current: 1,
@@ -117,22 +120,14 @@ const QuestionsPage: React.FC<QuestionListProps> = (props) => {
         );
       },
     },
-    {
-      title: '文档简介',
-      key: 'introduce',
-      dataIndex: 'introduce',
-      width: 400,
-      render: (text) => {
-        return setSubStr(text, 80);
-      },
-    },
+
     {
       title: '发布时间',
-      key: 'introduce',
-      dataIndex: 'introduce',
-      width: 400,
+      key: 'createdAt',
+      dataIndex: 'createdAt',
+      width: 200,
       render: (text) => {
-        return setSubStr(text, 80);
+        return utc2beijing(text);
       },
     },
 
@@ -158,9 +153,51 @@ const QuestionsPage: React.FC<QuestionListProps> = (props) => {
       },
     },
     {
-      title: '解决',
+      title: '内容',
+      key: 'content',
+      dataIndex: 'content',
+      width: 200,
+      render: (text, record) => {
+        if (text) {
+          return (
+            <div
+              className="pointer c_green"
+              onClick={() => {
+                setVisibleMEDitor(true);
+                setCurrentQuestion(record);
+              }}
+            >
+              查看图文信息
+            </div>
+          );
+        }
+      },
+    },
+    {
+      title: '解决状态',
       key: 'accept',
       dataIndex: 'accept',
+      width: 100,
+      render: (text) => {
+        if (text) {
+          return (
+            <Tag color="#2db7f5" key={text}>
+              已解决
+            </Tag>
+          );
+        }
+      },
+    },
+    // {
+    //   title: '回答数',
+    //   key: 'answer',
+    //   dataIndex: 'answer',
+    //   width: 100,
+    // },
+    {
+      title: '浏览量',
+      key: 'view',
+      dataIndex: 'view',
       width: 100,
     },
     {
@@ -170,29 +207,7 @@ const QuestionsPage: React.FC<QuestionListProps> = (props) => {
       width: 300,
       render: (text: string, record: any) => (
         <Space size="middle">
-          <Link to={`/questions/${record._id}`}>修改</Link>
-          <Popconfirm
-            title={record.stick ? '确定要取消吗?' : '确定要置顶吗'}
-            onConfirm={(e) => updateStick(record)}
-            // onCancel={cancel}
-            okText="确定"
-            cancelText="取消"
-          >
-            <div className={`pointer  ${!record.stick ? 'c_green' : 'c_red'}`}>
-              {record.stick ? '取消置顶' : '置顶'}
-            </div>
-          </Popconfirm>
-          <Popconfirm
-            title={record.stick ? '确定要取消吗?' : '确定要推荐吗'}
-            onConfirm={(e) => updateRecommend(record)}
-            // onCancel={cancel}
-            okText="确定"
-            cancelText="取消"
-          >
-            <div className={`pointer  ${!record.recommend ? 'c_green' : 'c_red'}`}>
-              {record.recommend ? '取消推荐' : '推荐'}
-            </div>
-          </Popconfirm>
+          {/* <Link to={`/questions/${record._id}`}>修改</Link> */}
           <Popconfirm
             title="确定要删除吗?"
             onConfirm={(e) => confirm(e, record)}
@@ -200,7 +215,7 @@ const QuestionsPage: React.FC<QuestionListProps> = (props) => {
             okText="确定"
             cancelText="取消"
           >
-            <a href="#">删除</a>
+            <div className="pointer c_red">删除</div>
           </Popconfirm>
         </Space>
       ),
@@ -209,17 +224,6 @@ const QuestionsPage: React.FC<QuestionListProps> = (props) => {
   return (
     <PageHeaderWrapper>
       <div className="div_w_20">
-        <div>
-          <Button
-            type="primary"
-            className="ma_b_10"
-            onClick={() => {
-              history.push('/questions/create');
-            }}
-          >
-            新建
-          </Button>
-        </div>
         <div>
           <Spin tip="Loading..." spinning={questionLoading}>
             <Table
@@ -231,6 +235,21 @@ const QuestionsPage: React.FC<QuestionListProps> = (props) => {
             />
           </Spin>
         </div>
+
+        <Modal
+          title="问题内容"
+          destroyOnClose
+          visible={visibleMEDitor}
+          footer={null}
+          onCancel={() => {
+            setVisibleMEDitor(false);
+          }}
+          width={800}
+        >
+          <div className="steps-content-no-center">
+            <MEDitor.Markdown source={currentQuestion.content} />
+          </div>
+        </Modal>
       </div>
     </PageHeaderWrapper>
   );
