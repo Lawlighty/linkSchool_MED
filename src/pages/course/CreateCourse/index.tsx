@@ -49,6 +49,8 @@ const steps = [
 ];
 
 const initCourse = {
+  price:0,
+  sprice:0,
   content: mk_inti_string,
   stick: false,
   recommend: false,

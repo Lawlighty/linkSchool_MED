@@ -18,7 +18,6 @@ import MEDitor from '@uiw/react-md-editor';
 import { mk_inti_string } from '../../../config/mk_init';
 // import numeral from 'numeral';
 import defaultUrl from '@/pages/config';
-import { doc } from 'prettier';
 
 const { Step } = Steps;
 const { TextArea } = Input;
