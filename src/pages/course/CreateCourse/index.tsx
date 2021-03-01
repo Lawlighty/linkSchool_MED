@@ -49,8 +49,8 @@ const steps = [
 ];
 
 const initCourse = {
-  price:0,
-  sprice:0,
+  price: 0,
+  sprice: 0,
   content: mk_inti_string,
   stick: false,
   recommend: false,
@@ -166,6 +166,7 @@ const CreateCourse: React.FC<{}> = (props) => {
     const nowcourse = course;
     nowcourse['cover'] = nowcourse['cover'] || defaultUrl.default_cover;
     nowcourse['episodes'] = currentEpisodeList || [];
+    nowcourse['browse'] = 0;
     dispatch({
       type: 'course/addCourseList',
       payload: {

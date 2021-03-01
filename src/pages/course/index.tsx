@@ -327,7 +327,7 @@ const CoursesPage: React.FC<CourseListProps> = (props) => {
             </div>
           </Popconfirm>
           <Popconfirm
-            title={record.stick ? '确定要取消吗?' : '确定要推荐吗'}
+            title={record.recommend ? '确定要取消吗?' : '确定要推荐吗'}
             onConfirm={(e) => updateRecommend(record)}
             // onCancel={cancel}
             okText="确定"

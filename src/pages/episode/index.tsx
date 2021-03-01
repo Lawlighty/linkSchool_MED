@@ -19,7 +19,7 @@ import {
 } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './index.less';
-import { getColorByStrLength } from '@/utils/utilFuncs';
+import { getColorByStrLength, time_To_hhmmss } from '@/utils/utilFuncs';
 import MEDitor from '@uiw/react-md-editor';
 import defaultUrl from '@/pages/config';
 interface EpisodeListProps {
@@ -113,6 +113,7 @@ const EpisodesPage: React.FC<EpisodeListProps> = (props) => {
   };
 
   const handleChangeFile = (info) => {
+    console.log('handleChangeFile', info);
     const currentpercent = info.file.percent ? parseInt(info.file.percent, 10) : 0;
     setPercent(currentpercent);
     if (info.file.status === 'uploading') {
@@ -120,10 +121,20 @@ const EpisodesPage: React.FC<EpisodeListProps> = (props) => {
       return;
     }
     if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      setCurrentEpisode({ ...currentEpisode, file: info.file.response.url });
-      // getBase64(info.file.originFileObj, (imageUrl) => {
-      setLoading(false);
+      // setCurrentEpisode({ ...currentEpisode, file: info.file.response.url });
+      // // getBase64(info.file.originFileObj, (imageUrl) => {
+      // setLoading(false);
+      // 获取视频时长
+      const { url } = info.file.response;
+      const audioElement = new Audio(url);
+      let dur = 0;
+      audioElement.addEventListener('loadedmetadata', function (_event) {
+        dur = audioElement.duration;
+        const duration = time_To_hhmmss(dur);
+        console.log('duration', duration);
+        setCurrentEpisode({ ...currentEpisode, file: info.file.response.url, duration });
+        setLoading(false);
+      });
       //   setCourse({ ...course, cover: imageUrl });
       // });
     }

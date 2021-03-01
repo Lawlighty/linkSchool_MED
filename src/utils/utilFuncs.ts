@@ -25,4 +25,31 @@ function getColorByStrLength(str: string) {
   const color = str.length <= 4 ? 'geekblue' : str.length <= 6 ? 'green' : 'volcano';
   return color;
 }
-export { setSubStr, getQueryWhere, getColorByStrLength };
+// 视频时长字符串
+
+function time_To_hhmmss(seconds: number) {
+  let hh;
+  let mm;
+  let ss;
+
+  if (seconds == null || seconds <= 0) {
+    return '00:00:00';
+  }
+  hh = (seconds / 3600) | 0;
+  seconds = parseInt(seconds) - hh * 3600;
+  if (parseInt(hh) < 10) {
+    hh = `0${hh}`;
+  }
+
+  mm = (seconds / 60) | 0;
+
+  ss = parseInt(seconds) - mm * 60;
+  if (parseInt(mm) < 10) {
+    mm = `0${mm}`;
+  }
+  if (ss < 10) {
+    ss = `0${ss}`;
+  }
+  return `${hh}:${mm}:${ss}`;
+}
+export { setSubStr, getQueryWhere, getColorByStrLength, time_To_hhmmss };
