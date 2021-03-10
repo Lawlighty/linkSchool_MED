@@ -32,18 +32,18 @@ class Settings extends Component<SettingsProps, SettingsState> {
     super(props);
     const menuMap = {
       base: <FormattedMessage id="accountandsettings.menuMap.basic" defaultMessage="基本信息" />,
-      security: (
-        <FormattedMessage id="accountandsettings.menuMap.security" defaultMessage="安全设置" />
-      ),
-      binding: (
-        <FormattedMessage id="accountandsettings.menuMap.binding" defaultMessage="账号绑定" />
-      ),
-      notification: (
-        <FormattedMessage
-          id="accountandsettings.menuMap.notification"
-          defaultMessage="新消息通知"
-        />
-      ),
+      // security: (
+      //   <FormattedMessage id="accountandsettings.menuMap.security" defaultMessage="安全设置" />
+      // ),
+      // binding: (
+      //   <FormattedMessage id="accountandsettings.menuMap.binding" defaultMessage="账号绑定" />
+      // ),
+      // notification: (
+      //   <FormattedMessage
+      //     id="accountandsettings.menuMap.notification"
+      //     defaultMessage="新消息通知"
+      //   />
+      // ),
     };
     this.state = {
       mode: 'inline',
@@ -56,6 +56,8 @@ class Settings extends Component<SettingsProps, SettingsState> {
     const { dispatch } = this.props;
     dispatch({
       type: 'accountAndsettings/fetchCurrent',
+      // type: 'user/fetchUserDetail',
+      payload: {},
     });
     window.addEventListener('resize', this.resize);
     this.resize();

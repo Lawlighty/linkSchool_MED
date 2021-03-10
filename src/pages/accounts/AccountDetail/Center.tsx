@@ -17,6 +17,10 @@ import { Tag, Tooltip as AntdTooltip, Tabs } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './Center.less';
 import { timestampToTime } from '@/utils/timestampToTime';
+import UserCourses from '@/pages/accounts/RightInfo/Courses';
+import UserQuestions from '@/pages/accounts/RightInfo/Questions';
+import UserDocuments from '@/pages/accounts/RightInfo/Documents';
+import UserFocus from '@/pages/accounts/RightInfo/Focus';
 
 const { TabPane } = Tabs;
 
@@ -59,7 +63,7 @@ const UserCenter: React.FC<any> = (props) => {
                 SVIP
               </Tag>
             </div>
-            <div>{userDetail.introduc || '暂无简介'}</div>
+            <div style={{ textAlign: 'left' }}>{userDetail.introduc || '暂无简介'}</div>
           </div>
           <div className={styles.detail}>
             <p>
@@ -106,34 +110,45 @@ const UserCenter: React.FC<any> = (props) => {
               tab={
                 <span>
                   <VideoCameraOutlined />
-                  视频(5)
+                  发布课程(5)
                 </span>
               }
               key="1"
             >
-              Content of Tab Pane 1
+              <UserCourses />
+            </TabPane>
+            <TabPane
+              tab={
+                <span>
+                  <VideoCameraOutlined />
+                  学习(5)
+                </span>
+              }
+              key="2"
+            >
+              <UserCourses />
             </TabPane>
             <TabPane
               tab={
                 <span>
                   <ReadOutlined />
-                  文档(1)
+                  发布文档(1)
                 </span>
               }
-              key="2"
+              key="3"
             >
-              Content of Tab Pane 2
+              <UserDocuments />
             </TabPane>
             <TabPane
               tab={
                 <span>
                   <CoffeeOutlined />
-                  帖子(3)
+                  提问(3)
                 </span>
               }
-              key="3"
+              key="4"
             >
-              Content of Tab Pane 3
+              <UserQuestions />
             </TabPane>
             <TabPane
               tab={
@@ -142,7 +157,7 @@ const UserCenter: React.FC<any> = (props) => {
                   收藏(7)
                 </span>
               }
-              key="4"
+              key="5"
             >
               Content of Tab Pane 3
             </TabPane>
@@ -153,9 +168,9 @@ const UserCenter: React.FC<any> = (props) => {
                   关注(12)
                 </span>
               }
-              key="5"
+              key="6"
             >
-              Content of Tab Pane 3
+              <UserFocus />
             </TabPane>
             <TabPane
               tab={
@@ -164,7 +179,7 @@ const UserCenter: React.FC<any> = (props) => {
                   SVIP
                 </span>
               }
-              key="6"
+              key="7"
             >
               Content of Tab Pane 3
             </TabPane>

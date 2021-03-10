@@ -6,6 +6,7 @@ import {
   query_user_list,
   query_user_detail,
   delete_user,
+  update_user_info,
 } from '@/services/user';
 import { getQueryWhere } from '@/utils/utilFuncs';
 
@@ -24,7 +25,7 @@ export interface CurrentUser {
 }
 
 export interface UserModelState {
-  currentUser?: CurrentUser;
+  currentUser?: any;
   userList?: any;
   userDetail?: any;
   // userListCount: number;
@@ -144,6 +145,29 @@ const UserModel = {
       yield put({
         type: 'setUserDetail',
         payload: response,
+      });
+      yield put({
+        type: 'setUserLoading',
+        payload: {
+          loading: false,
+        },
+      });
+    },
+    *updateUser({ payload, callback }, { call, put }) {
+      yield put({
+        type: 'setUserLoading',
+        payload: {
+          loading: true,
+        },
+      });
+      const response = yield call(update_user_info, payload.id, payload.params);
+
+      if (callback && typeof callback === 'function') {
+        callback(response);
+      }
+      yield put({
+        type: 'fetchUserDetail',
+        payload: { id: payload.id, params: {} },
       });
       yield put({
         type: 'setUserLoading',

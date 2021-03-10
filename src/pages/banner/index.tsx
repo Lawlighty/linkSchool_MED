@@ -13,6 +13,7 @@ import {
   message,
   Spin,
   Upload,
+  Image,
 } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './index.less';
@@ -34,6 +35,7 @@ const initBanner = {
 
 const BannerObj = {
   HOME_PAGE: '首页',
+  AD: '广告',
 };
 const BannersPage: React.FC<BannerListProps> = (props) => {
   const { dispatch, bannerList, bannerListCount, bannerLoading } = props;
@@ -143,7 +145,8 @@ const BannersPage: React.FC<BannerListProps> = (props) => {
       title: '图片预览',
       key: 'img',
       dataIndex: 'img',
-      render: (text) => <img src={text} style={{ height: 100 }} alt="轮播图" />,
+      // render: (text) => <img src={text} style={{ height: 100 }} alt="轮播图" />,
+      render: (text) => <Image width={200} src={text} />,
     },
     {
       title: '跳转地址',
@@ -238,6 +241,7 @@ const BannersPage: React.FC<BannerListProps> = (props) => {
                 onChange={(e) => changeCurrentTag('type', e)}
               >
                 <Option value="HOME_PAGE">首页</Option>
+                <Option value="AD">广告</Option>
               </Select>
             </div>
           </div>

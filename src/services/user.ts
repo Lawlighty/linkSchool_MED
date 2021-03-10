@@ -27,3 +27,11 @@ export async function delete_user(id: string): Promise<any> {
     method: 'DELETE',
   });
 }
+
+// 修改个人信息
+export async function update_user_info(id: string, params: any): Promise<any> {
+  return request(`/api/users/${id}`, {
+    method: 'PUT',
+    data: params,
+  });
+}

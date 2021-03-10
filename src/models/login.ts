@@ -32,7 +32,7 @@ const Model: LoginModelType = {
   },
 
   effects: {
-    *login({ payload }, { call, put }) {
+    *login({ payload }, { call, put, select }) {
       // const response = yield call(fakeAccountLogin, payload);
       const response = yield call(Accountlogin, payload);
       // return;
@@ -44,6 +44,10 @@ const Model: LoginModelType = {
       if (response.status === 200) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('currentUser', JSON.stringify(response.user));
+        yield put({
+          type: 'user/saveCurrentUser',
+          payload: response.user,
+        });
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         message.success('🎉 🎉 🎉  登录成功！');
