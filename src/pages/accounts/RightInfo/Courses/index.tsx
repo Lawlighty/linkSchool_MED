@@ -31,7 +31,10 @@ const UserCourses: React.FC<any> = (props) => {
             hoverable
             style={{ width: 200 }}
             cover={
-              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+              <img
+                alt="example"
+                src="http://linkschool-1300224703.cos.ap-shanghai.myqcloud.com/b20c24a639a0bfaff6f255897c5e76d9.jpg"
+              />
             }
           >
             <Meta
@@ -45,7 +48,10 @@ const UserCourses: React.FC<any> = (props) => {
             hoverable
             style={{ width: 200 }}
             cover={
-              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+              <img
+                alt="example"
+                src="http://linkschool-1300224703.cos.ap-shanghai.myqcloud.com/b20c24a639a0bfaff6f255897c5e76d9.jpg"
+              />
             }
           >
             <Meta
@@ -59,7 +65,10 @@ const UserCourses: React.FC<any> = (props) => {
             hoverable
             style={{ width: 200 }}
             cover={
-              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+              <img
+                alt="example"
+                src="http://linkschool-1300224703.cos.ap-shanghai.myqcloud.com/b20c24a639a0bfaff6f255897c5e76d9.jpg"
+              />
             }
           >
             <Meta
@@ -73,7 +82,10 @@ const UserCourses: React.FC<any> = (props) => {
             hoverable
             style={{ width: 200 }}
             cover={
-              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+              <img
+                alt="example"
+                src="http://linkschool-1300224703.cos.ap-shanghai.myqcloud.com/b20c24a639a0bfaff6f255897c5e76d9.jpg"
+              />
             }
           >
             <Meta
