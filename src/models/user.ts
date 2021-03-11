@@ -134,7 +134,7 @@ const UserModel = {
       });
     },
 
-    *fetchUserDetail({ payload }, { call, put }) {
+    *fetchUserDetail({ payload, callback }, { call, put }) {
       yield put({
         type: 'setUserLoading',
         payload: {
@@ -142,6 +142,9 @@ const UserModel = {
         },
       });
       const response = yield call(query_user_detail, payload.id, payload.params);
+      if (callback && typeof callback === 'function') {
+        callback(response);
+      }
       yield put({
         type: 'setUserDetail',
         payload: response,

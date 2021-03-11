@@ -6,12 +6,14 @@ import React, { Component, useEffect, useState } from 'react';
 // import { CurrentUser } from '../data.d';
 import defaultUrl from '@/pages/config';
 import styles from './BaseView.less';
+import { useForm } from 'antd/lib/form/Form';
 
 const BaseView: React.FC<any> = (props) => {
   const { dispatch, userDetail, currentUser } = props;
   const [nowInfo, setNowInfo] = useState({});
   const [loading, setLoading] = useState(false);
   const [currentAvatar, setCurrentAvatar] = useState('');
+  const [form] = useForm();
   const getUserDetails = () => {
     // 根据url 查询信息
     const user_id = JSON.parse(localStorage.getItem('currentUser') || '{}')['_id'];
@@ -19,19 +21,19 @@ const BaseView: React.FC<any> = (props) => {
       dispatch({
         type: 'user/fetchUserDetail',
         payload: { id: user_id, params: {} },
+        callback: (res) => {
+          if (res) {
+            form.setFieldsValue(res);
+          }
+        },
       });
     }
   };
   useEffect(() => {
     getUserDetails();
   }, []);
-  useEffect(() => {
-    console.log('得到新的userDetail', userDetail);
-    setNowInfo({ ...userDetail });
-  }, [userDetail]);
+
   const getAvatarURL = () => {
-    // const { userDetail } = this.props;
-    // const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     if (userDetail) {
       if (userDetail.avatar) {
         return userDetail.avatar;
@@ -43,7 +45,6 @@ const BaseView: React.FC<any> = (props) => {
 
   const handleFinish = (values: any) => {
     // message.success(formatMessage({ id: 'accountandsettings.basic.update.success' }));
-    console.log('Received values of form: ', values);
     dispatch({
       type: 'user/updateUser',
       payload: { id: userDetail._id, params: { ...values, avatar: currentAvatar } },
@@ -62,7 +63,6 @@ const BaseView: React.FC<any> = (props) => {
     });
   };
   const handleChange = (info) => {
-    console.log('handleChange', info);
     if (info.file.status === 'uploading') {
       setLoading(true);
       return;
@@ -107,7 +107,13 @@ const BaseView: React.FC<any> = (props) => {
   return (
     <div className={styles.baseView}>
       <div className={styles.left}>
-        <Form layout="vertical" onFinish={handleFinish} initialValues={userDetail} hideRequiredMark>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleFinish}
+          initialValues={userDetail}
+          hideRequiredMark
+        >
           <Form.Item name="username" label={formatMessage({ id: '用户名' })}>
             <Input disabled />
           </Form.Item>
