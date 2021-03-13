@@ -187,6 +187,30 @@
               },
             ],
           },
+
+          {
+            path: '/teacher',
+            name: '讲师',
+            icon: 'verified',
+            // component: './accounts/accounts',
+            // authority: ['admin'],
+            routes: [
+              {
+                path: '/teacher/certificates',
+                name: '申请列表',
+                icon: 'user',
+                // component: './accounts/AccountsList',
+                component: './teachers',
+                // authority: ['admin'],
+              },
+              {
+                path: '/teacher/list',
+                name: '讲师列表',
+                icon: 'user',
+                component: './teachers',
+              },
+            ],
+          },
           {
             path: '/account',
             name: '我的',

@@ -13,7 +13,7 @@ function setSubStr(str: string, length: number = 50) {
 function getQueryWhere(query: object) {
   const currentQuery = {};
   Object.keys(query).forEach((key) => {
-    if (query[key]) {
+    if (query[key] || query[key] === false) {
       currentQuery[key] = query[key];
     }
   });
