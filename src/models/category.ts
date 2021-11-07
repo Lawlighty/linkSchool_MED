@@ -84,6 +84,7 @@ const Model = {
         },
       });
       const response = yield call(add_category, payload.params);
+      console.log('response', response);
       if (response.status === 200) {
         yield put({
           type: 'user/successCodeMessage',

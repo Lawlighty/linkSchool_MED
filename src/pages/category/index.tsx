@@ -21,6 +21,8 @@ import {
   message,
   Spin,
   Select,
+  InputNumber,
+  Image,
 } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './index.less';
@@ -87,10 +89,13 @@ const CategorysPage: React.FC<CategoryListProps> = (props) => {
     fetchCategorys();
   }, []);
   const changeCurrentCategory = (key, value) => {
+    console.log('key', key)
+    console.log('value', value);
     setCurrentCategory({ ...currentCategory, [key]: value });
   };
   const handleOk = () => {
     setVisible(false);
+    console.log('currentCategory==>', currentCategory);
     if (currentCategory._id) {
       dispatch({
         type: 'category/updateCategoryList',
@@ -122,15 +127,24 @@ const CategorysPage: React.FC<CategoryListProps> = (props) => {
       dataIndex: 'name',
       render: (text) => {
         const color = getColorByStrLength(text);
-        // if (text === 'JAVA') {
-        //   color = 'volcano';
-        // }
         return (
           <Tag color={color} key={text}>
             {text.toUpperCase()}
           </Tag>
         );
       },
+    },
+    // {
+    //   title: '图标',
+    //   key: 'icon',
+    //   dataIndex: 'icon',
+    // },
+    {
+      title: '图标预览',
+      key: 'icon',
+      dataIndex: 'icon',
+      // render: (text) => <img src={text} style={{ height: 100 }} alt="轮播图" />,
+      render: (text) => <Image width={50} src={text} />,
     },
     {
       title: '父级类别',
@@ -140,9 +154,6 @@ const CategorysPage: React.FC<CategoryListProps> = (props) => {
         if (text) {
           const p_name = text.name || '';
           const color = getColorByStrLength(p_name);
-          // if (text === 'JAVA') {
-          //   color = 'volcano';
-          // }
           return (
             <Tag color={color} key={p_name}>
               {p_name.toUpperCase()}
@@ -151,6 +162,12 @@ const CategorysPage: React.FC<CategoryListProps> = (props) => {
         }
         return '';
       },
+    },
+
+    {
+      title: '排序',
+      key: 'orderNum',
+      dataIndex: 'orderNum',
     },
     {
       title: '描述',
@@ -164,8 +181,13 @@ const CategorysPage: React.FC<CategoryListProps> = (props) => {
         <Space size="middle">
           <a
             onClick={(e) => {
-              e.stopPropagation();
-              setCurrentCategory({ ...record });
+              if (record.parentid) {
+                fetchParentCategorys(record.parentid.name);
+              }
+              setCurrentCategory({
+                ...record,
+                parentid: record.parentid ? record.parentid._id : null,
+              });
               setVisible(true);
             }}
           >
@@ -232,6 +254,27 @@ const CategorysPage: React.FC<CategoryListProps> = (props) => {
             </div>
           </div>
           <div className={styles.item}>
+            <div className={styles.label}>类别图标</div>
+            <div className={styles.info}>
+              <Input
+                placeholder="请输入类别图标"
+                value={currentCategory.icon}
+                onChange={(e) => changeCurrentCategory('icon', e.target.value)}
+              />
+            </div>
+          </div>
+          <div className={styles.item}>
+            <div className={styles.label}>类别排序</div>
+            <div className={styles.info}>
+              <InputNumber
+                min={1}
+                max={100}
+                value={currentCategory.orderNum||1}
+                onChange={(e) => changeCurrentCategory('orderNum', e)}
+              />
+            </div>
+          </div>
+          <div className={styles.item}>
             <div className={styles.label}>父级类别</div>
             <div className={styles.info}>
               <Select
@@ -240,6 +283,7 @@ const CategorysPage: React.FC<CategoryListProps> = (props) => {
                 onChange={(e) => {
                   changeCurrentCategory('parentid', e);
                 }}
+                value={currentCategory.parentid}
                 style={{ minWidth: 200 }}
                 filterOption={(input, option) =>
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0

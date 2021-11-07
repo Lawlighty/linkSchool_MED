@@ -210,6 +210,7 @@ const UserModel = {
     errorCodeMessage({ payload }, { call, put }) {
       // 获取token\
       // 判断status
+      console.log('payload', payload);
       message.error(payload.message);
     },
     successCodeMessage({ payload }, { call, put }) {
