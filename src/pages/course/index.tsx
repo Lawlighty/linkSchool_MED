@@ -197,7 +197,7 @@ const CoursesPage: React.FC<CourseListProps> = (props) => {
       title: '作者',
       key: 'author',
       dataIndex: 'author',
-      width: 200,
+      width: 70,
       render: (text, record) => {
         let author = '';
         if (text && text.nickname) {
@@ -228,7 +228,7 @@ const CoursesPage: React.FC<CourseListProps> = (props) => {
       key: 'cover',
       dataIndex: 'cover',
       width: 200,
-      render: (text) => <img src={text} style={{ height: 100 }} alt="封面预览" />,
+      render: (text) => <img src={text} style={{ width: '100%' }} alt="封面预览" />,
     },
     {
       title: '类型',
