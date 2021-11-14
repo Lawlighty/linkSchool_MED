@@ -8,6 +8,7 @@ import {
   delete_user,
   update_user_info,
 } from '@/services/user';
+import router from 'umi/router';
 import { getQueryWhere } from '@/utils/utilFuncs';
 
 export interface CurrentUser {
@@ -64,6 +65,21 @@ const UserModel = {
     userListCount: 0,
     userLoading: false,
   },
+
+  // subscriptions: {
+  //   setup({ dispatch, history }) {  // eslint-disable-line
+  //     const loginToken = localStorage.getItem('currentUser');
+  //     if (loginToken) {
+  //       dispatch({
+  //         type: 'login',
+  //         query: JSON.parse(loginToken),
+  //         token: true,
+  //       });
+  //     } else {
+  //       history.replace('/login');
+  //     }
+  //   },
+  // },
 
   effects: {
     *fetch(_, { call, put }) {
